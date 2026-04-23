@@ -12,7 +12,7 @@ module.exports = {
         const isGroup = chatId.endsWith('@g.us');
 
         if (!global.db.player[senderNumber]) global.db.player[senderNumber] = { saldo: 0, reputasi: 0 };
-        if (!global.db.market) global.db.market = { pasarInduk: {}, tokoPemain: {}, lelang: {} }; // Tambah laci lelang
+        if (!global.db.market) global.db.market = { pasarInduk: {}, tokoPemain: {}, lelang: {} }; 
         if (!global.db.market.tokoPemain) global.db.market.tokoPemain = {};
 
         if (global.db.market.tokoPemain[senderNumber]) {
@@ -67,18 +67,19 @@ module.exports = {
             etalase: {}, 
             pendapatan: 0,
             tokenWeb: randomToken,
-            terakhirLaku: Date.now() // ⏱️ SENSOR WAKTU UNTUK AUTO-LELANG NANTINYA
+            terakhirLaku: Date.now() // ⏱️ Sensor Auto-Lelang
         };
 
         fs.writeFileSync(path.join(process.cwd(), 'data/market.json'), JSON.stringify(global.db.market, null, 2));
         fs.writeFileSync(path.join(process.cwd(), 'data/player.json'), JSON.stringify(global.db.player, null, 2));
         fs.writeFileSync(path.join(process.cwd(), 'data/bank.json'), JSON.stringify(global.db.bank, null, 2));
 
-        const pesanRahasia = `🎉 *SELAMAT! TOKO DIBUKA*\n\nDashboard: https://d687-180-241-241-59.ngrok-free.app/dashboard?token=${randomToken}`;
+        // --- 🌐 LINK DASHBOARD SUDAH MENGGUNAKAN DOMAIN HTTPS 🌐 ---
+        const pesanRahasia = `🎉 *SELAMAT! TOKO DIBUKA*\n\nKelola stok dan harga barangmu melalui tautan rahasia ini (Jangan bagikan ke siapapun):\n\n🔐 https://pet.jagokas.online/dashboard?token=${randomToken}`;
 
         if (isGroup) {
             await sock.sendMessage(chatId, { text: `🏪 *${namaToko}* resmi dibuka oleh @${senderNumber}!\nLisensi kategori *${kategoriPilihan.toUpperCase()}* telah diamankan.`, mentions: [senderId] });
-            await sock.sendMessage(senderId, { text: pesanRahasia });
+            await sock.sendMessage(senderId, { text: pesanRahasia }); // Kirim link ke Japri
         } else {
             await sock.sendMessage(chatId, { text: pesanRahasia });
         }
