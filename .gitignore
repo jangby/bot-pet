@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Kredensial WhatsApp (SANGAT RAHASIA!)
+# Jika ini bocor, nomor WA bot bisa dibajak orang lain
+auth_info_baileys/
+session/
+
+# Database Dinamis (Agar data pemain lokal tidak menimpa data server)
+data/*.json
+
+# File log dan environment
+npm-debug.log
+.env
