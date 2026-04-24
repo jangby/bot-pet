@@ -11,19 +11,27 @@ module.exports = {
         const penawarNumber = senderId.replace(/:\d+/, '').split('@')[0];
 
         const mentioned = msg.message?.extendedTextMessage?.contextInfo?.mentionedJid || [];
-        if (mentioned.length === 0 || args.length < 2) {
-            return await sock.sendMessage(chatId, { text: '⚠️ Format: `!bid @PemilikLama [nominal]`\nContoh: `!bid @nomor 6000`' }, { quoted: msg });
-        }
-
-        const targetId = mentioned[0];
-        const pemilikLamaNumber = targetId.replace(/:\d+/, '').split('@')[0];
         
-        const nominalBid = parseInt(args[args.length - 1].replace(/[^0-9]/g, ''));
+        let pemilikLamaNumber = '';
+        let nominalBid = 0;
+
+        // Mendukung penawaran ke BANK_SENTRAL atau pemain lain
+        if (args.length >= 2 && args[0].toUpperCase() === 'BANK_SENTRAL') {
+            pemilikLamaNumber = 'BANK_SENTRAL';
+            nominalBid = parseInt(args[1].replace(/[^0-9]/g, ''));
+        } else if (mentioned.length > 0) {
+            pemilikLamaNumber = mentioned[0].replace(/:\d+/, '').split('@')[0];
+            nominalBid = parseInt(args[args.length - 1].replace(/[^0-9]/g, ''));
+        } else {
+            return await sock.sendMessage(chatId, { text: '⚠️ Format salah!\nKetik: `!bid BANK_SENTRAL [nominal]` (Untuk lisensi baru)\nAtau: `!bid @PemilikLama [nominal]` (Untuk sitaan pemain)' }, { quoted: msg });
+        }
 
         if (isNaN(nominalBid) || nominalBid <= 0) return await sock.sendMessage(chatId, { text: '⚠️ Nominal tidak valid.' }, { quoted: msg });
         if (penawarNumber === pemilikLamaNumber) return await sock.sendMessage(chatId, { text: '⚠️ Kamu tidak bisa menawar tokomu sendiri.' }, { quoted: msg });
 
+        if (!global.db.market.lelang) global.db.market.lelang = {};
         const lelangTarget = global.db.market.lelang[pemilikLamaNumber];
+        
         if (!lelangTarget) return await sock.sendMessage(chatId, { text: '⚠️ Toko tersebut tidak ada di Balai Lelang.' }, { quoted: msg });
 
         if (nominalBid <= lelangTarget.bidTertinggi) {
@@ -52,6 +60,6 @@ module.exports = {
         fs.writeFileSync(path.join(process.cwd(), 'data/market.json'), JSON.stringify(global.db.market, null, 2));
         fs.writeFileSync(path.join(process.cwd(), 'data/player.json'), JSON.stringify(global.db.player, null, 2));
 
-        await sock.sendMessage(chatId, { text: `🔥 *TAWARAN DITERIMA!*\n\n@${penawarNumber} memimpin lelang untuk toko *${lelangTarget.nama}* dengan tawaran *${nominalBid.toLocaleString('id-ID')} 💠*!\n\n_Ketik !deal bagi pemilik lama (atau bank) untuk menerima tawaran ini._`, mentions: [senderId] }, { quoted: msg });
+        await sock.sendMessage(chatId, { text: `🔥 *TAWARAN DITERIMA!*\n\n@${penawarNumber} memimpin lelang untuk toko *${lelangTarget.nama}* dengan tawaran *${nominalBid.toLocaleString('id-ID')} 💠*!\n\n_Ketik !deal ${pemilikLamaNumber === 'BANK_SENTRAL' ? 'BANK_SENTRAL' : '@PemilikLama'} untuk menyetujui tawaran ini._`, mentions: [senderId] }, { quoted: msg });
     }
 };

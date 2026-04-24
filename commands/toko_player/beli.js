@@ -37,13 +37,18 @@ module.exports = {
         const dataToko = global.db.market.tokoPemain[sellerNumber];
         if (!dataToko) return await sock.sendMessage(chatId, { text: '⚠️ Pemain tersebut tidak memiliki lisensi toko aktif.' });
 
-        const kategoriBarang = global.db.market.pasarInduk[dataToko.kategori];
+        // Gabungkan seluruh kategori di pasar induk menjadi satu referensi
+        let semuaBarangInduk = {};
+        for (const kat in global.db.market.pasarInduk) { 
+            Object.assign(semuaBarangInduk, global.db.market.pasarInduk[kat]); 
+        }
+
         let idBarangDitemukan = null;
         let infoBarangInduk = null;
 
         for (const [idBarang, dataEtalase] of Object.entries(dataToko.etalase)) {
             if (dataEtalase.stok > 0) {
-                const infoAsli = kategoriBarang[idBarang];
+                const infoAsli = semuaBarangInduk[idBarang];
                 if (infoAsli && infoAsli.nama.toLowerCase().includes(namaBarangDicari)) {
                     idBarangDitemukan = idBarang;
                     infoBarangInduk = infoAsli;
@@ -66,14 +71,12 @@ module.exports = {
         const uangPembeli = parseInt(global.db.player[buyerNumber].saldo) || 0;
         if (uangPembeli < totalHarga) return await sock.sendMessage(chatId, { text: `⚠️ Uangmu tidak cukup! Tagihan: *${totalHarga.toLocaleString('id-ID')} 💠*.` });
 
-        // --- 6. EKSEKUSI TRANSAKSI P2P ---
+        // --- EKSEKUSI TRANSAKSI ---
         global.db.player[buyerNumber].saldo -= totalHarga;
         global.db.player[sellerNumber].saldo = parseInt(global.db.player[sellerNumber].saldo || 0) + totalHarga;
 
         itemEtalase.stok -= jumlahBeli;
         dataToko.pendapatan = (dataToko.pendapatan || 0) + totalHarga; 
-        
-        // ⏱️ RESET TIMER KEBANGKRUTAN KARENA ADA PENJUALAN!
         dataToko.terakhirLaku = Date.now();
 
         if (!global.db.inventory[buyerNumber][idBarangDitemukan]) global.db.inventory[buyerNumber][idBarangDitemukan] = 0;
@@ -83,7 +86,7 @@ module.exports = {
         fs.writeFileSync(path.join(process.cwd(), 'data/player.json'), JSON.stringify(global.db.player, null, 2));
         fs.writeFileSync(path.join(process.cwd(), 'data/inventory.json'), JSON.stringify(global.db.inventory, null, 2));
 
-        const teksPembeli = `🛒 *TRANSAKSI BERHASIL*\nPembelian di *${dataToko.nama}* sukses.\n📦 ${jumlahBeli}x ${infoBarangInduk.nama}\n💸 Total: *${totalHarga.toLocaleString('id-ID')} 💠*`;
+        const teksPembeli = `🛒 *TRANSAKSI BERHASIL*\n\nPembelian di *${dataToko.nama}* sukses.\n📦 ${jumlahBeli}x ${infoBarangInduk.nama}\n💸 Total: *${totalHarga.toLocaleString('id-ID')} 💠*`;
         await sock.sendMessage(chatId, { text: teksPembeli }, { quoted: msg });
     }
 };

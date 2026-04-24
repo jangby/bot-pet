@@ -11,7 +11,7 @@ const path = require('path');
 
 // --- 🌐 PENGATURAN GLOBAL & EKONOMI MAKRO 🌐 ---
 global.mataUang = "💠 Nexus";
-global.MAX_SUPPLY = 100000; // Pasokan Uang Mutlak (Tidak bisa inflasi)
+global.MAX_SUPPLY = 1000000; // Pasokan Uang Mutlak (Tidak bisa inflasi)
 
 global.db = {
     bank: {
@@ -49,6 +49,12 @@ function auditEkonomi() {
     for (const nomor in global.db.player) {
         uangDiPemain += (global.db.player[nomor].saldo || 0);
     }
+
+    // Tambahkan di dekat inisialisasi global.db.player atau global.db.pet
+if (!fs.existsSync('./data/boss.json')) {
+    fs.writeFileSync('./data/boss.json', JSON.stringify({ aktif: false }, null, 2));
+}
+global.db.boss = JSON.parse(fs.readFileSync('./data/boss.json'));
 
     const uangDiBank = global.db.bank.brankas;
     const totalUangSistem = uangDiPemain + uangDiBank;

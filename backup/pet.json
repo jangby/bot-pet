@@ -1,0 +1,294 @@
+{
+  "173766357327942": [
+    {
+      "id": 1,
+      "nama": "Anjing 🐶",
+      "spesies": "Anjing 🐶",
+      "diet": "karnivora",
+      "rarity": "Rare",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 100,
+      "kondisi": "Sehat",
+      "power": 25,
+      "lastFeed": 1776863160847
+    }
+  ],
+  "168032676651233": [
+    {
+      "id": 1,
+      "nama": "Alwi🐊",
+      "spesies": "Kucing 🐱",
+      "diet": "pescivora",
+      "rarity": "Common",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 5,
+      "kondisi": "Sehat",
+      "power": 10,
+      "lastFeed": 1776875003196
+    }
+  ],
+  "94142025728098": [
+    {
+      "id": 1,
+      "nama": "Anjing 🐶",
+      "spesies": "Anjing 🐶",
+      "diet": "karnivora",
+      "rarity": "Rare",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 50,
+      "kondisi": "Sakit (Pencernaan)",
+      "power": 25,
+      "lastFeed": 1776866237974
+    },
+    {
+      "id": 2,
+      "nama": "Konbrut",
+      "spesies": "Anjing 🐶",
+      "diet": "karnivora",
+      "rarity": "Rare",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 15,
+      "kondisi": "Sakit (Luka Fisik)",
+      "power": 25,
+      "lastFeed": 1776950909867
+    }
+  ],
+  "111416384184361": [
+    {
+      "id": 1,
+      "nama": "Anjing 🐶",
+      "spesies": "Anjing 🐶",
+      "diet": "karnivora",
+      "rarity": "Rare",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 100,
+      "kondisi": "Sehat",
+      "power": 25,
+      "lastFeed": 1776864749921
+    }
+  ],
+  "256886758719623": [
+    {
+      "id": 1,
+      "nama": "Kucing 🐱",
+      "spesies": "Kucing 🐱",
+      "diet": "pescivora",
+      "rarity": "Common",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 100,
+      "kondisi": "Sehat",
+      "power": 10,
+      "lastFeed": 1776865002266
+    }
+  ],
+  "230240831971567": [
+    {
+      "id": 1,
+      "nama": "Anjing 🐶",
+      "spesies": "Anjing 🐶",
+      "diet": "karnivora",
+      "rarity": "Rare",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 100,
+      "kondisi": "Sehat",
+      "power": 25,
+      "lastFeed": 1776865164367
+    }
+  ],
+  "209173564367025": [
+    {
+      "id": 1,
+      "nama": "kanjut",
+      "spesies": "Kucing 🐱",
+      "diet": "pescivora",
+      "rarity": "Common",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 20,
+      "kondisi": "Sehat",
+      "power": 10,
+      "lastFeed": 1776939751927
+    }
+  ],
+  "103165248712855": [
+    {
+      "id": 1,
+      "nama": "Naga",
+      "spesies": "Naga 🐲",
+      "diet": "mythical",
+      "rarity": "Legendary",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 60,
+      "kondisi": "Sehat",
+      "power": 150,
+      "lastFeed": 1776875064072
+    }
+  ],
+  "185925007056938": [
+    {
+      "id": 1,
+      "nama": "Mas Jamal💋👅",
+      "spesies": "Kuda 🐴",
+      "diet": "herbivora",
+      "rarity": "Epic",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 20,
+      "kondisi": "Sehat",
+      "power": 60,
+      "lastFeed": 1776940482126
+    }
+  ],
+  "113860287721516": [
+    {
+      "id": 1,
+      "nama": "JJ",
+      "spesies": "Anjing 🐶",
+      "diet": "karnivora",
+      "rarity": "Rare",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 40,
+      "kondisi": "Sakit (Luka Fisik)",
+      "power": 25,
+      "lastFeed": 1776901967547
+    }
+  ],
+  "75038078300307": [
+    {
+      "id": 1,
+      "nama": "Walid CIO",
+      "spesies": "Singa 🦁",
+      "diet": "karnivora",
+      "rarity": "Epic",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 50,
+      "kondisi": "Sakit (Luka Fisik)",
+      "power": 60,
+      "lastFeed": 1776936626156
+    },
+    {
+      "id": 2,
+      "nama": "Syahroni",
+      "spesies": "Anjing 🐶",
+      "diet": "karnivora",
+      "rarity": "Rare",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 100,
+      "kondisi": "Sehat",
+      "power": 20,
+      "lastFeed": 1776936961750
+    }
+  ],
+  "179165332521048": [
+    {
+      "id": 1,
+      "nama": "konda",
+      "spesies": "Kuda 🐴",
+      "diet": "herbivora",
+      "rarity": "Epic",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 5,
+      "kondisi": "Sehat",
+      "power": 60,
+      "lastFeed": 1776951822824
+    }
+  ],
+  "1435089526784": [
+    {
+      "id": 1,
+      "nama": "Anjing 🐶",
+      "spesies": "Anjing 🐶",
+      "diet": "karnivora",
+      "rarity": "Rare",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 50,
+      "kondisi": "Sakit (Luka Fisik)",
+      "power": 25,
+      "lastFeed": 1776951083211
+    },
+    {
+      "id": 2,
+      "nama": "Kucing 🐱",
+      "spesies": "Kucing 🐱",
+      "diet": "pescivora",
+      "rarity": "Common",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 20,
+      "kondisi": "Sehat",
+      "power": 10,
+      "lastFeed": 1776951232342
+    },
+    {
+      "id": 3,
+      "nama": "Kucing 🐱",
+      "spesies": "Kucing 🐱",
+      "diet": "pescivora",
+      "rarity": "Common",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 20,
+      "kondisi": "Sehat",
+      "power": 10,
+      "lastFeed": 1776951267275
+    },
+    {
+      "id": 4,
+      "nama": "Kucing 🐱",
+      "spesies": "Kucing 🐱",
+      "diet": "pescivora",
+      "rarity": "Common",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 60,
+      "kondisi": "Sakit (Luka Fisik)",
+      "power": 10,
+      "lastFeed": 1776951296174
+    },
+    {
+      "id": 5,
+      "nama": "Serigala",
+      "spesies": "Serigala 🐺",
+      "diet": "karnivora",
+      "rarity": "Epic",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 60,
+      "kondisi": "Sakit (Luka Fisik)",
+      "power": 45,
+      "lastFeed": 1776951122770
+    }
+  ]
+}

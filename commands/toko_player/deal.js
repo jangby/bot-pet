@@ -11,11 +11,16 @@ module.exports = {
         const senderNumber = senderId.replace(/:\d+/, '').split('@')[0];
 
         const mentioned = msg.message?.extendedTextMessage?.contextInfo?.mentionedJid || [];
-        if (mentioned.length === 0) {
-            return await sock.sendMessage(chatId, { text: '⚠️ Tag pemilik lama toko yang lelangnya ingin kamu tutup!\nContoh: `!deal @PemilikLama`' }, { quoted: msg });
+        
+        let pemilikLamaNumber = '';
+        if (args.length >= 1 && args[0].toUpperCase() === 'BANK_SENTRAL') {
+            pemilikLamaNumber = 'BANK_SENTRAL';
+        } else if (mentioned.length > 0) {
+            pemilikLamaNumber = mentioned[0].replace(/:\d+/, '').split('@')[0];
+        } else {
+            return await sock.sendMessage(chatId, { text: '⚠️ Format salah!\nKetik: `!deal BANK_SENTRAL` atau `!deal @PemilikLama`' }, { quoted: msg });
         }
 
-        const pemilikLamaNumber = mentioned[0].replace(/:\d+/, '').split('@')[0];
         const lelangTarget = global.db.market.lelang[pemilikLamaNumber];
 
         if (!lelangTarget) return await sock.sendMessage(chatId, { text: '⚠️ Toko tersebut tidak ada di Balai Lelang.' }, { quoted: msg });
@@ -24,10 +29,8 @@ module.exports = {
             return await sock.sendMessage(chatId, { text: '⚠️ Belum ada yang menawar toko ini! Tidak bisa deal.' }, { quoted: msg });
         }
 
-        // Jika penjualnya adalah pemain asli, dia yang harus mengetik !deal
-        // Jika tokonya hasil sitaan Bank, siapa saja boleh menutup lelang ini untuk pemain tertinggi
         const BATAS_BANGKRUT = 2 * 24 * 60 * 60 * 1000;
-        const isSitaanBank = (Date.now() - lelangTarget.waktuSita) <= BATAS_BANGKRUT; // Penanda sederhana ini barang sitaan
+        const isSitaanBank = pemilikLamaNumber === 'BANK_SENTRAL' || (Date.now() - lelangTarget.waktuSita) <= BATAS_BANGKRUT;
 
         if (senderNumber !== pemilikLamaNumber && !isSitaanBank) {
             return await sock.sendMessage(chatId, { text: '⚠️ Hanya pemilik lama yang bisa mengetik !deal untuk menyetujui harga lelang.' }, { quoted: msg });
@@ -37,21 +40,18 @@ module.exports = {
         const hargaAkhir = lelangTarget.bidTertinggi;
 
         // --- PINDAHTANGAN ASET ---
-        // Distribusi Uang
         if (isSitaanBank) {
-            // Uang masuk ke brankas Bank
-            global.db.bank.brankas += hargaAkhir;
+            global.db.bank.brankas += hargaAkhir; // Uang masuk ke Bank
         } else {
-            // Uang masuk ke dompet pemilik lama
-            global.db.player[pemilikLamaNumber].saldo = parseInt(global.db.player[pemilikLamaNumber].saldo || 0) + hargaAkhir;
+            global.db.player[pemilikLamaNumber].saldo = parseInt(global.db.player[pemilikLamaNumber].saldo || 0) + hargaAkhir; // Uang ke pemilik lama
         }
 
         // Pindahkan toko ke pemenang
         global.db.market.tokoPemain[pemenang] = {
             nama: lelangTarget.nama,
-            kategori: lelangTarget.kategori,
-            etalase: lelangTarget.etalase,
-            tokenWeb: lelangTarget.tokenWeb, // Token web lama diwariskan!
+            kategori: 'serba_ada', // Kategori mutlak menjadi Serba Ada
+            etalase: lelangTarget.etalase || {},
+            tokenWeb: lelangTarget.tokenWeb, 
             pendapatan: 0,
             terakhirLaku: Date.now()
         };
@@ -63,14 +63,13 @@ module.exports = {
         fs.writeFileSync(path.join(process.cwd(), 'data/player.json'), JSON.stringify(global.db.player, null, 2));
         fs.writeFileSync(path.join(process.cwd(), 'data/bank.json'), JSON.stringify(global.db.bank, null, 2));
 
-        const teksDeal = 
-`🤝 *AKUISISI TOKO BERHASIL!* 🤝
-
-Toko 🏢 *${lelangTarget.nama}* resmi berpindah tangan ke @${pemenang} dengan harga akhir *${hargaAkhir.toLocaleString('id-ID')} 💠*.
-
-Pemenang mewarisi seluruh etalase barang dan tautan Web Dashboard toko ini.
-_Silakan ketik !mytoko untuk mengecek._`;
+        // Generate Link Toko Baru
+        const linkToko = `https://pet.jagokas.online/dashboard?token=${lelangTarget.tokenWeb}`;
+        const teksDeal = `🤝 *AKUISISI TOKO BERHASIL!* 🤝\n\nToko 🏢 *${lelangTarget.nama}* resmi berpindah tangan ke @${pemenang} dengan harga *${hargaAkhir.toLocaleString('id-ID')} 💠*.\n\nPemenang mewarisi seluruh isi etalase toko ini.`;
 
         await sock.sendMessage(chatId, { text: teksDeal, mentions: [`${pemenang}@s.whatsapp.net`] }, { quoted: msg });
+        
+        // Kirim link manajemen toko ke PM Pemenang
+        await sock.sendMessage(`${pemenang}@s.whatsapp.net`, { text: `🎉 Selamat! Kamu berhasil memenangkan lelang toko.\n\nKelola stok barang Serba Ada kamu melalui link rahasia ini:\n🔐 ${linkToko}` });
     }
 };

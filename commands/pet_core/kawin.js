@@ -1,63 +1,69 @@
+const fs = require('fs');
+const path = require('path');
+
 module.exports = {
     name: 'kawin',
-    description: 'Mengawinkan peliharaan dengan milik pasangan (Minimal Lv. 10)',
+    description: 'Menikahkan pet dengan pet milik pemain lain',
 
     async execute(sock, msg, args) {
         const chatId = msg.key.remoteJid;
         const senderId = msg.key.participant || msg.key.remoteJid;
-        const penawarNumber = senderId.replace(/:\d+/, '').split('@')[0];
+        const senderNumber = senderId.replace(/:\d+/, '').split('@')[0];
 
         const mentioned = msg.message?.extendedTextMessage?.contextInfo?.mentionedJid || [];
-        if (mentioned.length === 0 || args.length < 2) {
-            return await sock.sendMessage(chatId, { text: '⚠️ Format: `!kawin @pasangan [ID Pet Kamu]`' }, { quoted: msg });
+        
+        if (mentioned.length === 0 || args.length < 3) {
+            return await sock.sendMessage(chatId, { text: '⚠️ *Format salah!*\nCara pakai: `!kawin @tag_pemilik_pasangan [ID_Pet_Kamu] [ID_Pet_Pasangan]`' }, { quoted: msg });
         }
 
         const targetId = mentioned[0];
         const targetNumber = targetId.replace(/:\d+/, '').split('@')[0];
-        const idPetPenawar = parseInt(args[args.length - 1]);
-
-        if (penawarNumber === targetNumber) return await sock.sendMessage(chatId, { text: '⚠️ Tidak bisa mengawinkan dengan diri sendiri!' }, { quoted: msg });
-
-        // Validasi Pet Penawar
-        if (!global.db.pet[penawarNumber]) return;
-        const petPenawar = global.db.pet[penawarNumber].find(p => p.id === idPetPenawar);
-
-        if (!petPenawar) return await sock.sendMessage(chatId, { text: `⚠️ Pet ID ${idPetPenawar} tidak ditemukan di kandangmu.` });
-        if (petPenawar.level < 10) return await sock.sendMessage(chatId, { text: `⚠️ ${petPenawar.nama} masih di bawah umur! Harus minimal Level 10.` });
-        if (petPenawar.kondisi !== 'Sehat') return await sock.sendMessage(chatId, { text: `⚠️ ${petPenawar.nama} sedang sakit!` });
-
-        // Cari jodoh otomatis di kandang pasangan (Spesies sama, Lv >= 10, Sehat)
-        const petPasangan = (global.db.pet[targetNumber] || []).find(p => 
-            p.spesies === petPenawar.spesies && 
-            p.level >= 10 && 
-            p.kondisi === 'Sehat'
-        );
-
-        if (!petPasangan) {
-            return await sock.sendMessage(chatId, { text: `⚠️ @${targetNumber} tidak memiliki *${petPenawar.spesies}* yang Sehat dan mencapai Level 10 untuk dikawinkan.`, mentions: [targetId] });
+        
+        if (senderNumber === targetNumber) {
+            return await sock.sendMessage(chatId, { text: '⚠️ Pet kamu tidak bisa dikawinkan dengan pet milikmu sendiri (harus beda pemilik)!' }, { quoted: msg });
         }
 
-        // Simpan data lamaran ke memori global
+        const idPetSendiri = parseInt(args[1]);
+        const idPetLawan = parseInt(args[2]);
+
+        const petSendiriList = global.db.pet[senderNumber] || [];
+        const petLawanList = global.db.pet[targetNumber] || [];
+
+        const petPengaju = petSendiriList.find(p => p.id === idPetSendiri);
+        const petTarget = petLawanList.find(p => p.id === idPetLawan);
+
+        if (!petPengaju) return await sock.sendMessage(chatId, { text: `⚠️ Kamu tidak memiliki pet dengan ID ${idPetSendiri}.` }, { quoted: msg });
+        if (!petTarget) return await sock.sendMessage(chatId, { text: `⚠️ Pemain tersebut tidak memiliki pet dengan ID ${idPetLawan}.` }, { quoted: msg });
+
+        // Syarat kawin 1: Spesies harus sama
+        if (petPengaju.spesies !== petTarget.spesies) {
+            return await sock.sendMessage(chatId, { text: `⚠️ Gagal! Spesies mereka berbeda (${petPengaju.spesies} & ${petTarget.spesies}).` }, { quoted: msg });
+        }
+
+        // Syarat kawin 2: Minimal level 10 (bisa kamu ubah angkanya)
+        if (petPengaju.level < 10 || petTarget.level < 10) {
+            return await sock.sendMessage(chatId, { text: `⚠️ Gagal! Kedua pet harus minimal Level 10 agar cukup umur untuk kawin.` }, { quoted: msg });
+        }
+
+        // Inisialisasi object proposal jika belum ada di memori
         if (!global.db.proposalKawin) global.db.proposalKawin = {};
-        
-        global.db.proposalKawin[msg.key.id] = {
-            penawar: penawarNumber,
-            idPetPenawar: petPenawar.id,
+
+        const teksProposal = `💍 *PROPOSAL KAWIN PET!* 💍\n\n@${senderNumber} ingin menikahkan *${petPengaju.nama}* dengan *${petTarget.nama}* milik @${targetNumber}!\n\n👉 *@${targetNumber}, balas (reply) pesan ini dengan mengetik "gas" untuk menerima ajakan kawin!*`;
+
+        // 1. Kirim pesan proposal & simpan ke variabel botMsg
+        const botMsg = await sock.sendMessage(chatId, { 
+            text: teksProposal, 
+            mentions: [senderId, targetId] 
+        }, { quoted: msg });
+
+        // 2. Simpan sesi proposal menggunakan ID PESAN BOT
+        global.db.proposalKawin[botMsg.key.id] = {
+            pengaju: senderNumber,
+            idPetPengaju: petPengaju.id,
             target: targetNumber,
-            idPetTarget: petPasangan.id,
-            spesies: petPenawar.spesies,
-            diet: petPenawar.diet,
-            chatId: chatId
+            idPetTarget: petTarget.id,
+            chatId: chatId,
+            waktu: Date.now()
         };
-
-        const teksLamaran = 
-`💖 *PROPOSAL PERNIKAHAN PET!* 💖
-
-@${penawarNumber} ingin mengawinkan *${petPenawar.nama}* (Lv.${petPenawar.level}) miliknya dengan *${petPasangan.nama}* (Lv.${petPasangan.level}) milik @${targetNumber}!
-
-👉 *@${targetNumber}, balas (reply) pesan ini dengan mengetik "gas" untuk merestui pernikahan ini!*
-_Biaya persalinan ke Bank Sentral: Gratis_`;
-
-        await sock.sendMessage(chatId, { text: teksLamaran, mentions: [senderId, targetId] }, { quoted: msg });
     }
 };

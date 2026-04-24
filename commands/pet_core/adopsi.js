@@ -79,6 +79,30 @@ module.exports = {
         fs.writeFileSync(path.join(process.cwd(), 'data/player.json'), JSON.stringify(global.db.player, null, 2));
         fs.writeFileSync(path.join(process.cwd(), 'data/bank.json'), JSON.stringify(global.db.bank, null, 2));
 
+
+        // --- 📢 TRIGGER MILESTONE TOKO BARU 📢 ---
+        if (!global.db.market.milestoneToko) global.db.market.milestoneToko = 0;
+        const totalPemainPunyaPet = Object.keys(global.db.pet).length;
+
+        if (totalPemainPunyaPet >= global.db.market.milestoneToko + 10) {
+            global.db.market.milestoneToko += 10;
+            global.db.market.lelang['BANK_SENTRAL'] = {
+                nama: "Lisensi Toko Serba Ada",
+                kategori: "serba_ada",
+                etalase: {},
+                tokenWeb: Math.random().toString(36).substring(2, 15),
+                hargaBuka: 5000, // Harga buka lelang 5000 Nexus
+                bidTertinggi: 5000,
+                pemenangSementara: null,
+                pemilikLama: "BANK_SENTRAL",
+                waktuSita: Date.now()
+            };
+            fs.writeFileSync(path.join(process.cwd(), 'data/market.json'), JSON.stringify(global.db.market, null, 2));
+            
+            await sock.sendMessage(chatId, { text: `📢 *PENGUMUMAN BANK SENTRAL* 📢\n\nPopulasi mencapai ${totalPemainPunyaPet} Pemilik Pet!\nBank Sentral resmi merilis 1 *Lisensi Toko Serba Ada* ke Balai Lelang!\n\nToko ini berhak memonopoli SEMUA jenis Makanan & Obat!\n\nKetik \`!lelang\` untuk melihat dan \`!bid BANK_SENTRAL [nominal]\` untuk menawar lisensi emas ini!` });
+        }
+        // -----------------------------------------
+        
         const teksBerhasil = 
 `🎉 *ADOPSI BERHASIL!* 🎉
 
