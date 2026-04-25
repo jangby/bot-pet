@@ -3,10 +3,10 @@ const path = require('path');
 
 // Daftar perlengkapan yang tersedia
 const katalogGear = {
-    "cakar_besi": { nama: "Cakar Besi", tipe: "senjata", stat: 50, harga: 15000, desc: "+50 Damage Serangan" },
-    "taring_naga": { nama: "Taring Naga", tipe: "senjata", stat: 200, harga: 50000, desc: "+200 Damage Serangan" },
-    "kalung_darah": { nama: "Kalung Darah", tipe: "armor", stat: 200, harga: 20000, desc: "+200 Max HP" },
-    "zirah_titanium": { nama: "Zirah Titanium", tipe: "armor", stat: 800, harga: 75000, desc: "+800 Max HP" }
+    "cakar_besi": { nama: "Cakar Besi", tipe: "senjata", stat: 50, harga: 1500, desc: "+50 Damage Serangan" },
+    "taring_naga": { nama: "Taring Naga", tipe: "senjata", stat: 200, harga: 5000, desc: "+200 Damage Serangan" },
+    "kalung_darah": { nama: "Kalung Darah", tipe: "armor", stat: 200, harga: 7000, desc: "+200 Max HP" },
+    "zirah_titanium": { nama: "Zirah Titanium", tipe: "armor", stat: 800, harga: 10000, desc: "+800 Max HP" }
 };
 
 module.exports = {

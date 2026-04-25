@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Pet Shop</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 80px;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 20px;
+            text-align: center;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 { margin: 0; font-size: 24px; letter-spacing: 1px; }
+        .header p { margin: 5px 0 0 0; font-size: 14px; color: #d1d1d1; }
+        
+        .container { padding: 15px; }
+        
+        .pet-card {
+            background-color: #1e1e1e;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border: 1px solid #333;
+            transition: transform 0.2s;
+        }
+        .pet-card:active { transform: scale(0.98); }
+        
+        .pet-icon {
+            font-size: 45px;
+            min-width: 70px;
+            text-align: center;
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 10px;
+            margin-right: 15px;
+        }
+        
+        .pet-info { flex-grow: 1; }
+        .pet-info h3 { margin: 0 0 5px 0; font-size: 18px; color: #4facfe; }
+        .pet-stats { font-size: 12px; color: #aaa; margin-bottom: 8px; }
+        .pet-price { font-size: 14px; font-weight: bold; color: #ffca28; }
+        
+        .btn-adopsi {
+            background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(0, 180, 219, 0.4);
+        }
+        
+        .secret-card {
+            border: 1px solid #ff007a;
+            background: linear-gradient(135deg, #1e1e1e 0%, #2b0015 100%);
+        }
+        .secret-card h3 { color: #ff479c; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🐾 Nexus Pet Shop</h1>
+        <p>Temukan partner petualangan sejatimu!</p>
+    </div>
+
+    <div class="container" id="pet-list">
+        </div>
+
+    <script>
+        // Ganti dengan Nomor WhatsApp Bot-mu! (Gunakan format 628xxx)
+        const NOMOR_BOT = "6281313972866"; 
+
+        const daftarPet = [
+            // --- TIER: COMMON ---
+            { id: '1', nama: 'Kucing Liar', icon: '🐱', harga: '500', power: '5', tipe: 'Common' },
+            { id: '2', nama: 'Anjing Kampung', icon: '🐶', harga: '600', power: '6', tipe: 'Common' },
+            { id: '3', nama: 'Ayam Jago', icon: '🐓', harga: '700', power: '7', tipe: 'Common' },
+            { id: '4', nama: 'Bebek Petarung', icon: '🦆', harga: '800', power: '8', tipe: 'Common' },
+            { id: '5', nama: 'Kelinci Gesit', icon: '🐇', harga: '900', power: '9', tipe: 'Common' },
+            { id: '6', nama: 'Babi Hutan', icon: '🐗', harga: '1.200', power: '12', tipe: 'Common' },
+            { id: '7', nama: 'Rakun Pencuri', icon: '🦝', harga: '1.300', power: '13', tipe: 'Common' },
+            { id: '8', nama: 'Kelelawar Malam', icon: '🦇', harga: '1.400', power: '14', tipe: 'Common' },
+            { id: '9', nama: 'Beruang Es', icon: '🐻‍❄️', harga: '1.500', power: '15', tipe: 'Common' },
+            { id: '10', nama: 'Beruang Coklat', icon: '🐻', harga: '1.500', power: '15', tipe: 'Common' },
+
+            // --- TIER: RARE ---
+            { id: '11', nama: 'Merak Eksotis', icon: '🦚', harga: '2.000', power: '18', tipe: 'Rare' },
+            { id: '12', nama: 'Serigala Salju', icon: '🐺', harga: '2.200', power: '20', tipe: 'Rare' },
+            { id: '13', nama: 'Macan Tutul', icon: '🐆', harga: '2.500', power: '22', tipe: 'Rare' },
+            { id: '14', nama: 'Harimau Sumatera', icon: '🐅', harga: '2.800', power: '24', tipe: 'Rare' },
+            { id: '15', nama: 'Kingkong', icon: '🦍', harga: '3.000', power: '25', tipe: 'Rare' },
+            { id: '16', nama: 'Buaya Rawa', icon: '🐊', harga: '3.200', power: '26', tipe: 'Rare' },
+            { id: '17', nama: 'Banteng Liar', icon: '🐃', harga: '3.500', power: '28', tipe: 'Rare' },
+
+            // --- TIER: EPIC ---
+            { id: '18', nama: 'Kalajengking Gurun', icon: '🦂', harga: '4.000', power: '32', tipe: 'Epic' },
+            { id: '19', nama: 'Laba-laba Berbisa', icon: '🕷️', harga: '4.200', power: '34', tipe: 'Epic' },
+            { id: '20', nama: 'Anaconda', icon: '🐍', harga: '4.500', power: '35', tipe: 'Epic' },
+            { id: '21', nama: 'Gajah Perang', icon: '🐘', harga: '5.000', power: '40', tipe: 'Epic' },
+            { id: '22', nama: 'Badak Bercula', icon: '🦏', harga: '5.500', power: '42', tipe: 'Epic' },
+            { id: '23', nama: 'Hiu Putih', icon: '🦈', harga: '6.000', power: '45', tipe: 'Epic' },
+            { id: '24', nama: 'Paus Orca', icon: '🐋', harga: '6.500', power: '48', tipe: 'Epic' },
+
+            // --- TIER: MYTHIC ---
+            { id: '25', nama: 'Gurita Raksasa', icon: '🦑', harga: '8.000', power: '60', tipe: 'Mythic' },
+            { id: '26', nama: 'Kraken', icon: '🐙', harga: '9.000', power: '70', tipe: 'Mythic' },
+            { id: '27', nama: 'Burung Hantu Mistis', icon: '🦉', harga: '9.500', power: '75', tipe: 'Mythic' },
+            { id: '28', nama: 'Kuda Pegasus', icon: '🐎', harga: '10.000', power: '80', tipe: 'Mythic' },
+            { id: '29', nama: 'Unicorn', icon: '🦄', harga: '12.000', power: '90', tipe: 'Mythic' },
+
+            // --- TIER: LEGENDARY ---
+            { id: '30', nama: 'Phoenix', icon: '🐦‍🔥', harga: '15.000', power: '110', tipe: 'Legendary' },
+            { id: '31', nama: 'Naga Merah', icon: '🐉', harga: '18.000', power: '125', tipe: 'Legendary' },
+            { id: '32', nama: 'Naga Es', icon: '🐲', harga: '20.000', power: '140', tipe: 'Legendary' },
+
+            // --- TIER: SECRET (Sangat Mahal & Mematikan) ---
+            { id: '33', nama: 'Brontosaurus', icon: '🦕', harga: '25.000', power: '180', tipe: 'SECRET' },
+            { id: '34', nama: 'T-Rex', icon: '🦖', harga: '28.000', power: '200', tipe: 'SECRET' },
+            { id: '35', nama: 'Alien Misterius', icon: '👽', harga: '30.000', power: '220', tipe: 'SECRET' }
+        ];
+
+        const petContainer = document.getElementById('pet-list');
+
+        daftarPet.forEach(pet => {
+            const isSecret = pet.tipe === 'SECRET' ? 'secret-card' : '';
+            const pesanWA = encodeURIComponent(`!adopsi ${pet.id}`);
+            const linkWA = `https://wa.me/${NOMOR_BOT}?text=${pesanWA}`;
+
+            const card = `
+                <div class="pet-card ${isSecret}">
+                    <div class="pet-icon">${pet.icon}</div>
+                    <div class="pet-info">
+                        <h3>${pet.nama}</h3>
+                        <div class="pet-stats">Tipe: ${pet.tipe} | ⚔️ Power: ${pet.power}</div>
+                        <div class="pet-price">💠 ${pet.harga} Nexus</div>
+                    </div>
+                    <a href="${linkWA}" class="btn-adopsi">Adopsi</a>
+                </div>
+            `;
+            petContainer.innerHTML += card;
+        });
+    </script>
+</body>
+</html>

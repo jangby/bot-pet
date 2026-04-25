@@ -9,18 +9,17 @@ const qrcode = require('qrcode-terminal');
 const fs = require('fs');
 const path = require('path');
 
+let lelangInterval; 
+
 // --- 🌐 PENGATURAN GLOBAL & EKONOMI MAKRO 🌐 ---
 global.mataUang = "💠 Nexus";
-global.MAX_SUPPLY = 1000000; // Pasokan Uang Mutlak (Tidak bisa inflasi)
+global.MAX_SUPPLY = 1000000; 
 
 global.db = {
-    bank: {
-        brankas: global.MAX_SUPPLY, // Awal mula semua uang ada di Bank
-        kredit: {} // Catatan utang pemain { nomor: { utang, jatuhTempo } }
-    },
-    player: {}, // Data dompet & status pemain
-    pet: {},    // Data peliharaan
-    market: {}  // Data lisensi toko pemain
+    bank: { brankas: global.MAX_SUPPLY, kredit: {} },
+    player: {}, 
+    pet: {},    
+    market: {}  
 };
 
 // --- 💾 SISTEM DATABASE & AUDIT EKONOMI 💾 ---
@@ -38,30 +37,26 @@ function loadDatabase() {
         }
     });
 
-    auditEkonomi(); // Panggil BPK (Badan Pemeriksa Keuangan) bot
+    if (!fs.existsSync('./data/boss.json')) {
+        fs.writeFileSync('./data/boss.json', JSON.stringify({ aktif: false }, null, 2));
+    }
+    global.db.boss = JSON.parse(fs.readFileSync('./data/boss.json'));
+
+    auditEkonomi(); 
 }
 
 function auditEkonomi() {
     console.log('[AUDIT] Memeriksa keseimbangan ekonomi...');
     let uangDiPemain = 0;
-
-    // Hitung semua uang yang beredar di tangan pemain
     for (const nomor in global.db.player) {
         uangDiPemain += (global.db.player[nomor].saldo || 0);
     }
-
-    // Tambahkan di dekat inisialisasi global.db.player atau global.db.pet
-if (!fs.existsSync('./data/boss.json')) {
-    fs.writeFileSync('./data/boss.json', JSON.stringify({ aktif: false }, null, 2));
-}
-global.db.boss = JSON.parse(fs.readFileSync('./data/boss.json'));
 
     const uangDiBank = global.db.bank.brankas;
     const totalUangSistem = uangDiPemain + uangDiBank;
 
     if (totalUangSistem !== global.MAX_SUPPLY) {
         console.log(`⚠️ [PERINGATAN] Anomali ekonomi terdeteksi! Total: ${totalUangSistem}`);
-        // Jika ada kebocoran/anomali, Bank Sentral menanggung selisihnya agar tetap 100.000
         global.db.bank.brankas = global.MAX_SUPPLY - uangDiPemain;
         fs.writeFileSync(path.join(process.cwd(), 'data/bank.json'), JSON.stringify(global.db.bank, null, 2));
         console.log(`[AUDIT] Koreksi otomatis: Brankas Bank disesuaikan menjadi ${global.db.bank.brankas} Nexus.`);
@@ -86,7 +81,76 @@ async function connectToWhatsApp() {
         browser: ['Ubuntu', 'Chrome', '20.0.04'] 
     });
 
-    // --- INISIALISASI COMMAND HANDLER (STRUKTUR BARU) ---
+    // --- MESIN PEMANTAU LELANG OTOMATIS (ANTI-CRASH) ---
+    if (lelangInterval) clearInterval(lelangInterval);
+    lelangInterval = setInterval(async () => {
+        // ✨ DIBUNGKUS TRY-CATCH AGAR BOT TIDAK MATI ✨
+        try {
+            if (!global.db.market || !global.db.market.lelang || !global.db.market.lelang['BANK_SENTRAL']) return;
+
+            const lelang = global.db.market.lelang['BANK_SENTRAL'];
+            if (!lelang.chatId) return; 
+
+            const sekarang = Date.now();
+            const durasiLelang = 60 * 60 * 1000; 
+            const intervalPengumuman = 5 * 60 * 1000; 
+            const waktuSelesai = lelang.waktuSita + durasiLelang;
+
+            if (sekarang >= waktuSelesai) {
+                if (lelang.pemenangSementara) {
+                    const pemenang = lelang.pemenangSementara;
+                    const harga = lelang.bidTertinggi;
+
+                    global.db.bank.brankas += harga;
+                    
+                    global.db.market.tokoPemain[pemenang] = {
+                        nama: lelang.nama,
+                        kategori: 'serba_ada',
+                        etalase: lelang.etalase || {},
+                        tokenWeb: lelang.tokenWeb,
+                        pendapatan: 0,
+                        terakhirLaku: Date.now()
+                    };
+
+                    const teksMenang = `🎉 *LELANG RESMI DITUTUP!* 🎉\n\nWaktu 1 Jam telah habis!\nLisensi Toko Serba Ada jatuh ke tangan @${pemenang} dengan tawaran akhir *${harga.toLocaleString('id-ID')} 💠*!\n\n_Silakan cek !mytoko untuk mengelola toko monopoli milikmu._`;
+
+                    delete global.db.market.lelang['BANK_SENTRAL'];
+                    fs.writeFileSync('./data/market.json', JSON.stringify(global.db.market, null, 2));
+                    fs.writeFileSync('./data/bank.json', JSON.stringify(global.db.bank, null, 2));
+
+                    await sock.sendMessage(lelang.chatId, { text: teksMenang, mentions: [`${pemenang}@s.whatsapp.net`] });
+                } else {
+                    const teksBatal = `⚠️ *LELANG DIBATALKAN* ⚠️\n\nWaktu 1 Jam habis dan tidak ada satupun pemain yang berani menawar.\nLisensi ditarik kembali oleh Bank Sentral.`;
+                    delete global.db.market.lelang['BANK_SENTRAL'];
+                    fs.writeFileSync('./data/market.json', JSON.stringify(global.db.market, null, 2));
+                    await sock.sendMessage(lelang.chatId, { text: teksBatal });
+                }
+                return;
+            }
+
+            if (!lelang.lastAnnounce) lelang.lastAnnounce = lelang.waktuSita;
+            
+            if (sekarang - lelang.lastAnnounce >= intervalPengumuman) {
+                lelang.lastAnnounce = sekarang;
+                fs.writeFileSync('./data/market.json', JSON.stringify(global.db.market, null, 2));
+
+                const sisaMenit = Math.ceil((waktuSelesai - sekarang) / 60000);
+                let teksUpdate = `📢 *UPDATE LELANG TOKO SEMENTARA* 📢\n\n⏳ Sisa Waktu Pelelangan: *${sisaMenit} Menit Lagi!*\n\n`;
+                
+                if (lelang.pemenangSementara) {
+                    teksUpdate += `🔥 *Penawar Tertinggi Saat Ini:*\n👤 @${lelang.pemenangSementara}\n💰 Nominal: *${lelang.bidTertinggi.toLocaleString('id-ID')} 💠*\n\n_Ada yang berani menawar lebih tinggi? Ketik !bid BANK_SENTRAL [nominal]_`;
+                    await sock.sendMessage(lelang.chatId, { text: teksUpdate, mentions: [`${lelang.pemenangSementara}@s.whatsapp.net`] });
+                } else {
+                    teksUpdate += `_Belum ada satu pun pemain yang menawar!\nKetik !bid BANK_SENTRAL [nominal] sekarang._`;
+                    await sock.sendMessage(lelang.chatId, { text: teksUpdate });
+                }
+            }
+        } catch (error) {
+            console.log("[SYSTEM] Tertunda: Menunggu cache Baileys siap untuk pengumuman lelang...");
+        }
+    }, 60000); 
+
+    // --- INISIALISASI COMMAND HANDLER ---
     sock.commands = new Map();
     const folders = ['perbankan', 'pet_core', 'pvp_coop', 'toko_player', 'panduan'];
     
@@ -102,13 +166,11 @@ async function connectToWhatsApp() {
         }
     }
     console.log(`[SYSTEM] Berhasil memuat ${sock.commands.size} perintah.`);
-    // --------------------------------------------
 
     sock.ev.on('creds.update', saveCreds);
 
     sock.ev.on('connection.update', (update) => {
         const { connection, lastDisconnect, qr } = update;
-        
         if (qr) qrcode.generate(qr, { small: true });
         
         if (connection === 'close') {
@@ -123,20 +185,16 @@ async function connectToWhatsApp() {
         const msg = m.messages[0];
         if (!msg.message || msg.key.fromMe) return;
 
-        // --- 🌟 SENSOR REPLY "GAS" (DUEL & KAWIN) 🌟 ---
+        // --- SENSOR REPLY "GAS" ---
         const teksPesanMasuk = msg.message.conversation || msg.message.extendedTextMessage?.text || "";
         const idPesanDibalas = msg.message.extendedTextMessage?.contextInfo?.stanzaId;
 
         if (idPesanDibalas && teksPesanMasuk.toLowerCase().trim() === 'gas') {
             const replierId = msg.key.participant || msg.key.remoteJid;
             const replierNumber = replierId.replace(/:\d+/, '').split('@')[0];
-            const fs = require('fs');
-            const path = require('path');
 
-            // 1. CEK JIKA ITU BALASAN TANTANGAN DUEL
             if (global.db.tantanganDuel && global.db.tantanganDuel[idPesanDibalas]) {
                 const dataDuel = global.db.tantanganDuel[idPesanDibalas];
-                
                 if (dataDuel.target === replierNumber) {
                     const penantangNumber = dataDuel.penantang;
                     const pet1 = global.db.pet[penantangNumber].find(p => p.id === dataDuel.idPetPenantang);
@@ -181,10 +239,8 @@ async function connectToWhatsApp() {
                 }
             }
 
-            // 2. CEK JIKA ITU BALASAN PROPOSAL PERNIKAHAN
             if (global.db.proposalKawin && global.db.proposalKawin[idPesanDibalas]) {
                 const dataKawin = global.db.proposalKawin[idPesanDibalas];
-                
                 if (dataKawin.target === replierNumber) {
                     if (!global.db.petBersama) global.db.petBersama = [];
                     
@@ -217,16 +273,13 @@ async function connectToWhatsApp() {
                 }
             }
         }
-        // ------------------------------------------------
 
-        const pesanTeks = msg.message.conversation || msg.message.extendedTextMessage?.text || msg.message.imageMessage?.caption || '';
-        
-        if (!pesanTeks.startsWith('!')) return;
+        const pesanTeksFull = msg.message.conversation || msg.message.extendedTextMessage?.text || msg.message.imageMessage?.caption || '';
+        if (!pesanTeksFull.startsWith('!')) return;
 
-        const args = pesanTeks.slice(1).trim().split(/\s+/);
-        const commandName = args.shift().toLowerCase();
+        const argsArray = pesanTeksFull.slice(1).trim().split(/\s+/);
+        const commandName = argsArray.shift().toLowerCase();
 
-        // Inisialisasi otomatis data player jika belum ada
         const senderId = msg.key.participant || msg.key.remoteJid;
         const senderNumber = senderId.replace(/:\d+/, '').split('@')[0];
         if (!global.db.player[senderNumber]) {
@@ -237,7 +290,7 @@ async function connectToWhatsApp() {
         if (sock.commands.has(commandName)) {
             const command = sock.commands.get(commandName);
             try {
-                await command.execute(sock, msg, args);
+                await command.execute(sock, msg, argsArray);
             } catch (error) {
                 console.error(`[ERROR] Gagal menjalankan perintah ${commandName}:`, error);
             }
@@ -245,7 +298,6 @@ async function connectToWhatsApp() {
     });
 }
 
-// Panggil Web Server
 const startWebServer = require('./server.js');
 startWebServer();
 

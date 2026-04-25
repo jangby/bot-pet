@@ -1,39 +1,19 @@
 module.exports = {
     name: 'tokohewan',
-    description: 'Melihat daftar peliharaan yang dijual oleh Bank Sentral',
+    description: 'Membuka katalog hewan peliharaan via Web',
 
     async execute(sock, msg, args) {
         const chatId = msg.key.remoteJid;
+        
+        // Ganti URL di bawah dengan alamat domain/IP web server milikmu
+        const linkWebToko = "https://d687-180-241-241-59.ngrok-free.app/tokohewan.html";
 
-        // Katalog Peliharaan Resmi Bank Sentral
-        const katalogTeks = 
-`🏪 *TOKO HEWAN BANK SENTRAL* 🏪
-_Gunakan uang Nexus-mu untuk mengadopsi peliharaan. Semakin langka, perawatannya semakin mahal!_
+        let teksToko = `🏪 *NEXUS PET SHOP* 🏪\n\n`;
+        teksToko += `Kami telah memindahkan toko kami ke dalam aplikasi web agar lebih nyaman!\n\n`;
+        teksToko += `👉 *KLIK LINK DI BAWAH UNTUK MASUK KE TOKO:*\n`;
+        teksToko += `🌐 ${linkWebToko}\n\n`;
+        teksToko += `_Pilih peliharaan incaranmu di web, lalu klik tombol Adopsi. Kamu akan otomatis diarahkan kembali ke sini!_`;
 
-🟢 *COMMON (Biasa)*
-[1] Kelinci 🐇 | Diet: Herbivora | Power: 5 | 💰 500 💠
-[2] Kucing 🐱 | Diet: Pescivora | Power: 10 | 💰 800 💠
-[3] Ayam 🐓 | Diet: Herbivora | Power: 8 | 💰 600 💠
-
-🔵 *RARE (Langka)*
-[4] Anjing 🐶 | Diet: Karnivora | Power: 20 | 💰 1.500 💠
-[5] Kuda 🐴 | Diet: Herbivora | Power: 25 | 💰 2.000 💠
-[6] Berang-berang 🦦 | Diet: Pescivora | Power: 22 | 💰 1.800 💠
-
-🟣 *EPIC (Epik)*
-[7] Serigala 🐺 | Diet: Karnivora | Power: 45 | 💰 4.000 💠
-[8] Beruang Es 🐻‍❄️ | Diet: Pescivora | Power: 50 | 💰 5.000 💠
-[9] Singa 🦁 | Diet: Karnivora | Power: 60 | 💰 6.000 💠
-
-🟡 *MYTHICAL (Legenda - Diet Kristal/Mana)*
-[10] Unicorn 🦄 | Diet: Mythical | Power: 100 | 💰 15.000 💠
-[11] Phoenix 🦅 | Diet: Mythical | Power: 120 | 💰 20.000 💠
-[12] Naga 🐲 | Diet: Mythical | Power: 150 | 💰 30.000 💠
-
-💡 *Cara Mengadopsi:*
-Ketik \`!adopsi [Nomor ID]\`
-_Contoh: \`!adopsi 4\` untuk membeli Anjing._`;
-
-        await sock.sendMessage(chatId, { text: katalogTeks }, { quoted: msg });
+        await sock.sendMessage(chatId, { text: teksToko }, { quoted: msg });
     }
 };
