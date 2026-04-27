@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Leaderboard - Hall of Fame</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f0f13;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 50px;
+        }
+        .header {
+            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            box-shadow: 0 5px 20px rgba(255, 140, 0, 0.4);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 { margin: 0; font-size: 26px; color: #1a1a1a; text-shadow: 1px 1px 2px rgba(255,255,255,0.3); }
+        .header p { margin: 5px 0 0 0; font-size: 14px; color: #333; font-weight: bold; }
+        
+        .container { padding: 20px; max-width: 600px; margin: 0 auto; }
+        
+        .rank-card {
+            background-color: #1e1e24;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+            transition: transform 0.2s;
+        }
+        
+        .rank-number {
+            font-size: 24px;
+            font-weight: 900;
+            min-width: 50px;
+            text-align: center;
+            color: #555;
+            margin-right: 15px;
+        }
+
+        .player-info { flex-grow: 1; }
+        .player-info h3 { margin: 0 0 5px 0; font-size: 18px; color: #fff; letter-spacing: 1px; }
+        .score-details { font-size: 12px; color: #aaa; margin-bottom: 5px; }
+        .total-score { font-size: 16px; font-weight: bold; color: #4facfe; }
+
+        /* Pewarnaan Spesial Top 3 */
+        .rank-1 { border: 2px solid #ffd700; background: linear-gradient(135deg, #2b2500 0%, #1e1e24 100%); box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
+        .rank-1 .rank-number { color: #ffd700; font-size: 32px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        
+        .rank-2 { border: 2px solid #c0c0c0; background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%); }
+        .rank-2 .rank-number { color: #c0c0c0; font-size: 28px; }
+
+        .rank-3 { border: 2px solid #cd7f32; background: linear-gradient(135deg, #291a0c 0%, #1e1e24 100%); }
+        .rank-3 .rank-number { color: #cd7f32; font-size: 26px; }
+
+        .icon-stat { display: inline-block; width: 16px; text-align: center; margin-right: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🏆 Hall of Fame</h1>
+        <p>Pemain Terkaya & Pelatih Terkuat</p>
+    </div>
+
+    <div class="container" id="leaderboard-list">
+        <div style="text-align: center; color: #888; margin-top: 50px;">
+            <p>🔄 Memuat data klasemen terbaru...</p>
+        </div>
+    </div>
+
+    <script>
+        // Cek apakah punya nama. Jika tidak ada nama, gunakan nomor yang disensor.
+        function formatNama(nama, nomor) {
+            if (nama === nomor || !nama) {
+                if (!nomor || nomor.length < 8) return nomor;
+                return 'Player ' + nomor.substring(0, 5) + '••••' + nomor.substring(nomor.length - 4);
+            }
+            return nama; // Jika sudah ada pushName, langsung tampilkan namanya!
+        }
+
+        async function loadKlasemen() {
+            try {
+                const response = await fetch('data_klasemen.json');
+                const data = await response.json();
+                
+                const container = document.getElementById('leaderboard-list');
+                container.innerHTML = '';
+
+                if (data.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; color:#aaa;">Belum ada data pemain.</p>';
+                    return;
+                }
+
+                data.forEach((player, index) => {
+                    const rank = index + 1;
+                    let rankClass = '';
+                    let crown = '';
+
+                    if (rank === 1) { rankClass = 'rank-1'; crown = '👑 '; }
+                    else if (rank === 2) { rankClass = 'rank-2'; }
+                    else if (rank === 3) { rankClass = 'rank-3'; }
+
+                    const namaTampil = formatNama(player.nama, player.nomor);
+
+                    const card = `
+                        <div class="rank-card ${rankClass}">
+                            <div class="rank-number">#${rank}</div>
+                            <div class="player-info">
+                                <h3>${crown}${namaTampil}</h3>
+                                <div class="score-details">
+                                    <span class="icon-stat">💰</span> Uang: ${player.saldo.toLocaleString('id-ID')} 💠<br>
+                                    <span class="icon-stat">🐾</span> Power Pet: ${player.petScore.toLocaleString('id-ID')} (${player.petCount} Ekor)
+                                </div>
+                                <div class="total-score">🌟 Total Skor: ${player.totalScore.toLocaleString('id-ID')}</div>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
+            } catch (error) {
+                console.error("Gagal memuat klasemen", error);
+                document.getElementById('leaderboard-list').innerHTML = '<p style="text-align:center; color:#ff4b4b;">⚠️ Gagal memuat data klasemen. Pastikan seseorang telah mengetik !klasemen di grup.</p>';
+            }
+        }
+
+        loadKlasemen();
+    </script>
+</body>
+</html>

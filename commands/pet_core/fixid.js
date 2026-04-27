@@ -2,34 +2,45 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = {
-    name: 'fixid',
-    description: 'Perintah Admin: Mengubah semua ID huruf acak menjadi angka berurutan',
+    name: 'fixrarity',
+    description: 'Perintah Admin: Memperbaiki status rarity/kelangkaan pet yang undefined',
 
     async execute(sock, msg, args) {
         const chatId = msg.key.remoteJid;
-        let totalPeliharaanDiperbaiki = 0;
+        let totalDiperbaiki = 0;
 
-        // Memeriksa dan mengubah semua data pet di database
+        // Pemetaan sederhana untuk mengecek rarity berdasarkan nama spesies
+        const rarityMap = {
+            'Kucing Liar 🐱': 'Common', 'Anjing Kampung 🐶': 'Common', 'Ayam Jago 🐓': 'Common',
+            'Bebek Petarung 🦆': 'Common', 'Kelinci Gesit 🐇': 'Common', 'Babi Hutan 🐗': 'Common',
+            'Rakun Pencuri 🦝': 'Common', 'Kelelawar Malam 🦇': 'Common', 'Beruang Es 🐻‍❄️': 'Common',
+            'Beruang Coklat 🐻': 'Common',
+            'Merak 🦚': 'Rare', 'Serigala Salju 🐺': 'Rare', 'Macan Tutul 🐆': 'Rare',
+            'Harimau Sumatera 🐅': 'Rare', 'Kingkong 🦍': 'Rare', 'Buaya Rawa 🐊': 'Rare',
+            'Banteng Liar 🐃': 'Rare',
+            'Kalajengking 🦂': 'Epic', 'Laba-laba 🕷️': 'Epic', 'Anaconda 🐍': 'Epic',
+            'Gajah Perang 🐘': 'Epic', 'Badak Bercula 🦏': 'Epic', 'Hiu Putih 🦈': 'Epic',
+            'Paus Orca 🐋': 'Epic',
+            'Gurita Raksasa 🦑': 'Mythic', 'Kraken 🐙': 'Mythic', 'Burung Hantu 🦉': 'Mythic',
+            'Kuda Pegasus 🐎': 'Mythic', 'Unicorn 🦄': 'Mythic',
+            'Phoenix 🐦‍🔥': 'Legendary', 'Naga Merah 🐉': 'Legendary', 'Naga Es 🐲': 'Legendary',
+            'Brontosaurus 🦕': 'SECRET', 'T-Rex 🦖': 'SECRET', 'Alien Misterius 👽': 'SECRET'
+        };
+
         if (global.db.pet) {
             for (const nomorPemain in global.db.pet) {
-                const daftarPeliharaan = global.db.pet[nomorPemain];
-                
-                // Menata ulang ID dari urutan ke-1, ke-2, dst
-                daftarPeliharaan.forEach((pet, index) => {
-                    pet.id = index + 1; // Memaksa ID menjadi 1, 2, 3...
-                    totalPeliharaanDiperbaiki++;
+                global.db.pet[nomorPemain].forEach(pet => {
+                    // Jika rarity tidak ada, kosong, atau undefined
+                    if (!pet.rarity || pet.rarity === 'undefined') {
+                        pet.rarity = rarityMap[pet.spesies] || 'Unknown';
+                        totalDiperbaiki++;
+                    }
                 });
             }
             
-            // Menyimpan kembali database yang sudah rapi
             fs.writeFileSync(path.join(process.cwd(), 'data/pet.json'), JSON.stringify(global.db.pet, null, 2));
         }
 
-        let teksHasil = `✅ *DATABASE BERHASIL DIPERBAIKI!*\n\n`;
-        teksHasil += `Sebanyak *${totalPeliharaanDiperbaiki}* peliharaan milik seluruh pemain telah ditata ulang.\n`;
-        teksHasil += `Semua ID yang berbentuk huruf acak telah diubah menjadi nomor urut (1, 2, 3, dst).\n\n`;
-        teksHasil += `_Sekarang perintah seperti mengubah nama, makan, dan berburu sudah 100% normal kembali!_`;
-
-        await sock.sendMessage(chatId, { text: teksHasil }, { quoted: msg });
+        await sock.sendMessage(chatId, { text: `✅ *PERBAIKAN SELESAI!*\n\nSebanyak *${totalDiperbaiki}* peliharaan yang statusnya "undefined" telah dikembalikan ke kelangkaan aslinya (Epic, Legendary, Secret, dll).` }, { quoted: msg });
     }
 };

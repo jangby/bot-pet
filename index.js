@@ -27,7 +27,7 @@ function loadDatabase() {
     const dataDir = path.join(process.cwd(), 'data');
     if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir);
 
-    const files = ['bank', 'player', 'pet', 'market'];
+    const files = ['bank', 'player', 'pet', 'market', 'inventory'];
     files.forEach(file => {
         const filePath = path.join(dataDir, `${file}.json`);
         if (fs.existsSync(filePath)) {

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Blacksmith - Gear Shop</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1d;
+            color: #d1d1d1;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 80px;
+        }
+        .header {
+            background: linear-gradient(135deg, #4e1a1a 0%, #a83232 100%);
+            padding: 20px;
+            text-align: center;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 { margin: 0; font-size: 24px; color: #ffcc00; text-shadow: 2px 2px 4px #000; }
+        .header p { margin: 5px 0 0 0; font-size: 14px; color: #ffeb99; }
+        
+        .container { padding: 15px; }
+        
+        .kategori-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 25px 0 10px 0;
+            color: #ff5722;
+            border-bottom: 2px solid #ff5722;
+            padding-bottom: 5px;
+        }
+
+        .gear-card {
+            background-color: #2b2b2b;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            border-left: 4px solid #757575;
+        }
+        
+        .gear-icon {
+            font-size: 40px;
+            min-width: 60px;
+            text-align: center;
+            background: #1f1f1f;
+            border-radius: 10px;
+            padding: 10px;
+            margin-right: 15px;
+            border: 1px solid #444;
+        }
+        
+        .gear-info { flex-grow: 1; }
+        .gear-info h3 { margin: 0 0 5px 0; font-size: 17px; color: #ffffff; }
+        .gear-stats { font-size: 12px; font-weight: bold; margin-bottom: 8px; }
+        .stat-senjata { color: #ff5252; }
+        .stat-armor { color: #448aff; }
+        .gear-price { font-size: 14px; font-weight: bold; color: #ffca28; }
+        
+        .btn-beli {
+            background: linear-gradient(135deg, #ff8c00 0%, #e65100 100%);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 13px;
+            box-shadow: 0 4px 10px rgba(230, 81, 0, 0.4);
+        }
+        
+        /* Pewarnaan Khusus Rarity */
+        .epic { border-left-color: #9c27b0; }
+        .legendary { border-left-color: #ffca28; background: linear-gradient(135deg, #3a2b00 0%, #2b2b2b 100%); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>⚒️ Nexus Blacksmith</h1>
+        <p>Toko Senjata & Zirah Peliharaan</p>
+    </div>
+
+    <div class="container" id="gear-list">
+        </div>
+
+    <script>
+        // GANTI DENGAN NOMOR BOT WA KAMU!
+        const NOMOR_BOT = "6281313972866"; 
+
+        const daftarGear = [
+            // SENJATA (Damage)
+            { id: 'cakar_besi', nama: 'Cakar Besi', icon: '🐾', harga: 1500, desc: '+50 Damage Serangan', tipe: 'Senjata', style: '' },
+            { id: 'gigi_beracun', nama: 'Gigi Beracun', icon: '🦷', harga: 3000, desc: '+120 Damage Serangan', tipe: 'Senjata', style: '' },
+            { id: 'cakar_baja', nama: 'Cakar Baja Titanium', icon: '🦾', harga: 5000, desc: '+250 Damage Serangan', tipe: 'Senjata', style: '' },
+            { id: 'taring_naga', nama: 'Taring Naga Api', icon: '🔥', harga: 9000, desc: '+450 Damage Serangan', tipe: 'Senjata', style: 'epic' },
+            { id: 'pedang_excalibur', nama: 'Pedang Excalibur', icon: '🗡️', harga: 16000, desc: '+800 Damage Serangan', tipe: 'Senjata', style: 'legendary' },
+            { id: 'sabit_kematian', nama: 'Sabit Kematian', icon: '🪓', harga: 25000, desc: '+1500 Damage Serangan', tipe: 'Senjata', style: 'legendary' },
+            
+            // ARMOR (HP)
+            { id: 'kalung_darah', nama: 'Kalung Darah', icon: '🩸', harga: 1500, desc: '+200 Max HP', tipe: 'Armor', style: '' },
+            { id: 'zirah_besi', nama: 'Zirah Besi', icon: '🛡️', harga: 3500, desc: '+500 Max HP', tipe: 'Armor', style: '' },
+            { id: 'zirah_titanium', nama: 'Zirah Titanium', icon: '⚙️', harga: 7000, desc: '+1000 Max HP', tipe: 'Armor', style: '' },
+            { id: 'sisik_naga', nama: 'Sisik Naga Kebal', icon: '🐉', harga: 12000, desc: '+2000 Max HP', tipe: 'Armor', style: 'epic' },
+            { id: 'helm_spartan', nama: 'Helm Spartan', icon: '🪖', harga: 18000, desc: '+3500 Max HP', tipe: 'Armor', style: 'legendary' },
+            { id: 'aura_dewa', nama: 'Aura Dewa Pelindung', icon: '✨', harga: 30000, desc: '+6000 Max HP', tipe: 'Armor', style: 'legendary' }
+        ];
+
+        const container = document.getElementById('gear-list');
+        let currentKategori = '';
+
+        daftarGear.forEach(item => {
+            if (item.tipe !== currentKategori) {
+                currentKategori = item.tipe;
+                container.innerHTML += `<div class="kategori-title">KATEGORI: ${currentKategori.toUpperCase()}</div>`;
+            }
+
+            const statClass = item.tipe === 'Senjata' ? 'stat-senjata' : 'stat-armor';
+            const pesanWA = encodeURIComponent(`!tokogear beli ${item.id}`);
+            const linkWA = `https://wa.me/${NOMOR_BOT}?text=${pesanWA}`;
+
+            const card = `
+                <div class="gear-card ${item.style}">
+                    <div class="gear-icon">${item.icon}</div>
+                    <div class="gear-info">
+                        <h3>${item.nama}</h3>
+                        <div class="gear-stats ${statClass}">${item.desc}</div>
+                        <div class="gear-price">💠 ${item.harga.toLocaleString('id-ID')} Nexus</div>
+                    </div>
+                    <a href="${linkWA}" class="btn-beli">Beli Item</a>
+                </div>
+            `;
+            container.innerHTML += card;
+        });
+    </script>
+</body>
+</html>

@@ -67,11 +67,19 @@ module.exports = {
         }
 
         const pet = kandang[petIndex];
+
+        // --- 🛡️ ANTI-CHEAT: BATAS MINIMAL LEVEL 3 🛡️ ---
+        if (pet.level < 3) {
+            return await sock.sendMessage(chatId, { 
+                text: `⚠️ *PENJUALAN DITOLAK!*\n\n*${pet.nama}* masih terlalu muda (Level ${pet.level}).\nKamu baru bisa menjual peliharaan ke Bank Sentral minimal pada *Level 3*.\n\n_Rajin-rajinlah memberi makan (!feed) dan berburu (!berburu) untuk menaikkan levelnya!_` 
+            }, { quoted: msg });
+        }
+
         const modalAwal = hargaDasar[pet.spesies] || 1000; // Harga default 1000 jika ada pet anomali
         
         // --- 💰 RUMUS PENJUALAN BARU (Investasi Menguntungkan) 💰 ---
         // Harga Jual = Harga Beli + (Level x 100)
-        const hargaJual = modalAwal + (pet.level * 100);
+        const hargaJual = modalAwal + (pet.level * 300);
 
         // Hapus pet dari array (diserahkan ke Bank)
         kandang.splice(petIndex, 1);

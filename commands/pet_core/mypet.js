@@ -1,95 +1,128 @@
 const fs = require('fs');
 const path = require('path');
 
+// --- KATALOG GEAR (Untuk menerjemahkan ID menjadi Nama) ---
+const katalogGear = {
+    // Senjata
+    "cakar_besi": { nama: "Cakar Besi" },
+    "gigi_beracun": { nama: "Gigi Beracun" },
+    "cakar_baja": { nama: "Cakar Baja Titanium" },
+    "taring_naga": { nama: "Taring Naga Api" },
+    "pedang_excalibur": { nama: "Pedang Excalibur" },
+    "sabit_kematian": { nama: "Sabit Kematian" },
+    // Armor
+    "kalung_darah": { nama: "Kalung Darah" },
+    "zirah_besi": { nama: "Zirah Besi" },
+    "zirah_titanium": { nama: "Zirah Titanium" },
+    "sisik_naga": { nama: "Sisik Naga Kebal" },
+    "helm_spartan": { nama: "Helm Spartan" },
+    "aura_dewa": { nama: "Aura Dewa Pelindung" }
+};
+
 module.exports = {
     name: 'mypet',
-    description: 'Melihat semua peliharaan di kandang (Pribadi & Bersama)',
+    description: 'Melihat daftar peliharaanmu beserta status dan perlengkapannya',
 
     async execute(sock, msg, args) {
         const chatId = msg.key.remoteJid;
         const senderId = msg.key.participant || msg.key.remoteJid;
         const senderNumber = senderId.replace(/:\d+/, '').split('@')[0];
-        const pushName = msg.pushName || 'Player';
-
-        // --- 🛡️ PENGAMAN DATABASE 🛡️ ---
-        if (!global.db.pet) global.db.pet = {};
-        if (!global.db.petBersama) global.db.petBersama = [];
-
-        let kandang = global.db.pet[senderNumber] || [];
-        let teksPet = `🏰 *KANDANG MILIK ${pushName.toUpperCase()}* 🏰\n\n`;
-
-        // --- 1. TAMPILKAN KANDANG PRIBADI ---
-        if (kandang.length === 0) {
-            teksPet += `_Kandang utamamu kosong. Ketik !tokohewan untuk membelinya._\n\n`;
-        } else {
-            kandang.forEach((dataPet) => {
-                const jamLalu = Math.floor((Date.now() - dataPet.lastFeed) / (1000 * 60 * 60));
-                let laparSekarang = Math.max(0, dataPet.lapar - (jamLalu * 5));
-                const statusLapar = laparSekarang <= 20 ? '⚠️ KELAPARAN' : '✅ Kenyang';
-                const iconKondisi = dataPet.kondisi === 'Sehat' ? '💚' : '💔';
-
-                // Deteksi Gear
-                let namaSenjata = "Tangan Kosong";
-                let namaArmor = "Tanpa Zirah";
-                
-                if (dataPet.gear) {
-                    if (dataPet.gear.senjata === 'cakar_besi') namaSenjata = "Cakar Besi";
-                    if (dataPet.gear.senjata === 'taring_naga') namaSenjata = "Taring Naga";
-                    if (dataPet.gear.armor === 'kalung_darah') namaArmor = "Kalung Darah";
-                    if (dataPet.gear.armor === 'zirah_titanium') namaArmor = "Zirah Titanium";
-                }
-
-                teksPet += `*ID [${dataPet.id}]* - ✨ *${dataPet.nama}*\n`;
-                teksPet += `🐾 ${dataPet.spesies} (${dataPet.rarity}) | 🆙 Lv.${dataPet.level}\n`;
-                teksPet += `🗡️ Senjata: ${namaSenjata}\n`;
-                teksPet += `🛡️ Armor: ${namaArmor}\n`;
-                teksPet += `🥩 Diet: ${dataPet.diet.toUpperCase()}\n`;
-                teksPet += `🍖 Lapar: ${laparSekarang}% ${statusLapar}\n`;
-                teksPet += `🏥 Kondisi: ${iconKondisi} ${dataPet.kondisi}\n`;
-                teksPet += `━━━━━━━━━━━━━━━━━━━━\n`;
-            });
-        }
-
-        // --- 2. TAMPILKAN HEWAN BERSAMA (COUPLE) ---
-        const petAnak = global.db.petBersama.filter(p => p.ortu1 === senderNumber || p.ortu2 === senderNumber);
         
-        if (petAnak.length > 0) {
-            teksPet += `\n💞 *HEWAN MILIK BERSAMA (COUPLE)* 💞\n\n`;
-            
-            petAnak.forEach((anak) => {
-                const pasanganNumber = anak.ortu1 === senderNumber ? anak.ortu2 : anak.ortu1;
-                const jamLalu = Math.floor((Date.now() - anak.lastFeed) / (1000 * 60 * 60));
-                let laparSekarang = Math.max(0, anak.lapar - (jamLalu * 5));
-                const iconKondisi = anak.kondisi === 'Sehat' ? '💚' : '💔';
+        // ✨ MENGAMBIL NAMA PROFIL WHATSAPP PEMAIN ✨
+        const pushname = msg.pushName || 'Pemain';
+
+        let punyaPeliharaan = false;
+        
+        // Menggunakan Pushname langsung, bukan tag nomor lagi
+        let teksMyPet = `🐾 *KANDANG PELIHARAAN ${pushname.toUpperCase()}* 🐾\n\n`;
+        let tagArray = []; // Array mention dikosongkan untuk menghindari error LID
+
+        // 1. CEK PELIHARAAN UTAMA
+        if (global.db.pet && global.db.pet[senderNumber] && global.db.pet[senderNumber].length > 0) {
+            punyaPeliharaan = true;
+            const peliharaanKu = global.db.pet[senderNumber];
+
+            peliharaanKu.forEach((pet) => {
+                const jamLalu = Math.floor((Date.now() - (pet.lastFeed || Date.now())) / (1000 * 60 * 60));
+                let laparSekarang = Math.max(0, (pet.lapar || 100) - (jamLalu * 5));
                 
-                // Deteksi Gear untuk Pet Bersama
-                let namaSenjata = "Tangan Kosong";
-                let namaArmor = "Tanpa Zirah";
+                let namaSenjata = "Kosong (Tangan Kosong)";
+                let namaArmor = "Kosong (Tanpa Zirah)";
                 
-                if (anak.gear) {
-                    if (anak.gear.senjata === 'cakar_besi') namaSenjata = "Cakar Besi";
-                    if (anak.gear.senjata === 'taring_naga') namaSenjata = "Taring Naga";
-                    if (anak.gear.armor === 'kalung_darah') namaArmor = "Kalung Darah";
-                    if (anak.gear.armor === 'zirah_titanium') namaArmor = "Zirah Titanium";
+                if (pet.gear) {
+                    if (pet.gear.senjata && katalogGear[pet.gear.senjata]) {
+                        namaSenjata = katalogGear[pet.gear.senjata].nama;
+                    }
+                    if (pet.gear.armor && katalogGear[pet.gear.armor]) {
+                        namaArmor = katalogGear[pet.gear.armor].nama;
+                    }
                 }
 
-                teksPet += `*ID [${anak.id}]* - ✨ *${anak.nama}*\n`;
-                teksPet += `👥 Bersama: @${pasanganNumber}\n`;
-                teksPet += `🐾 ${anak.spesies} | 🆙 Lv.${anak.level}\n`;
-                teksPet += `🗡️ Senjata: ${namaSenjata}\n`;
-                teksPet += `🛡️ Armor: ${namaArmor}\n`;
-                teksPet += `🥩 Diet: ${anak.diet.toUpperCase()}\n`;
-                teksPet += `🍖 Lapar: ${laparSekarang}%\n`;
-                teksPet += `🏥 Kondisi: ${iconKondisi} ${anak.kondisi}\n`;
-                teksPet += `━━━━━━━━━━━━━━━━━━━━\n`;
+                const targetXP = (pet.level || 1) * 100;
+                const rarity = pet.rarity ? `[${pet.rarity}]` : '';
+
+                teksMyPet += `========================\n`;
+                teksMyPet += `🆔 *ID:* ${pet.id}\n`;
+                teksMyPet += `📛 *Nama:* ${pet.nama}\n`;
+                teksMyPet += `🧬 *Spesies:* ${pet.spesies} ${rarity}\n`;
+                teksMyPet += `🍽️ *Diet:* ${pet.diet || 'Omnivora'}\n`;
+                teksMyPet += `📊 *Level:* ${pet.level || 1} (XP: ${pet.xp || 0}/${targetXP})\n`;
+                teksMyPet += `⚔️ *Power:* ${pet.power || 0}\n`;
+                teksMyPet += `❤️ *Max HP:* ${pet.health || 100}\n`;
+                teksMyPet += `🍗 *Tenaga:* ${laparSekarang}%\n`;
+                teksMyPet += `🏥 *Kondisi:* ${pet.kondisi || 'Sehat'}\n`;
+                teksMyPet += `🗡️ *Senjata:* ${namaSenjata}\n`;
+                teksMyPet += `🛡️ *Armor:* ${namaArmor}\n`;
             });
         }
 
-        teksPet += `💡 _Tip: Ketik !feed [ID Pet] [nama makanan] untuk memberi makan._`;
+        // 2. CEK ANAK PELIHARAAN (HASIL KAWIN)
+        if (global.db.petBersama && global.db.petBersama.length > 0) {
+            const anakKu = global.db.petBersama.filter(p => p.ortu1 === senderNumber || p.ortu2 === senderNumber);
+            
+            if (anakKu.length > 0) {
+                punyaPeliharaan = true;
+                teksMyPet += `\n\n🍼 *PELIHARAAN BERSAMA (HASIL KAWIN)* 🍼\n\n`;
+                
+                anakKu.forEach((pet) => {
+                    const jamLalu = Math.floor((Date.now() - (pet.lastFeed || Date.now())) / (1000 * 60 * 60));
+                    let laparSekarang = Math.max(0, (pet.lapar || 100) - (jamLalu * 5));
+                    
+                    let namaSenjata = "Kosong";
+                    let namaArmor = "Kosong";
+                    
+                    if (pet.gear) {
+                        if (pet.gear.senjata && katalogGear[pet.gear.senjata]) namaSenjata = katalogGear[pet.gear.senjata].nama;
+                        if (pet.gear.armor && katalogGear[pet.gear.armor]) namaArmor = katalogGear[pet.gear.armor].nama;
+                    }
 
-        // Rakit daftar tag/mention untuk pasangan agar warnanya biru
-        const daftarMention = petAnak.map(p => (p.ortu1 === senderNumber ? p.ortu2 : p.ortu1) + '@s.whatsapp.net');
+                    const targetXP = (pet.level || 1) * 100;
 
-        await sock.sendMessage(chatId, { text: teksPet, mentions: daftarMention }, { quoted: msg });
+                    teksMyPet += `========================\n`;
+                    teksMyPet += `🆔 *ID Bersama:* ${pet.id}\n`;
+                    teksMyPet += `📛 *Nama:* ${pet.nama}\n`;
+                    teksMyPet += `🧬 *Spesies:* ${pet.spesies}\n`;
+                    // Hanya menampilkan nomor asli tanpa tag agar tidak kena bug LID
+                    teksMyPet += `👨‍👩‍👦 *Ortu:* ${pet.ortu1} & ${pet.ortu2}\n`;
+                    teksMyPet += `📊 *Level:* ${pet.level || 1} (XP: ${pet.xp || 0}/${targetXP})\n`;
+                    teksMyPet += `⚔️ *Power:* ${pet.power || 0}\n`;
+                    teksMyPet += `❤️ *Max HP:* ${pet.health || 100}\n`;
+                    teksMyPet += `🍗 *Tenaga:* ${laparSekarang}%\n`;
+                    teksMyPet += `🏥 *Kondisi:* ${pet.kondisi || 'Sehat'}\n`;
+                    teksMyPet += `🗡️ *Senjata:* ${namaSenjata}\n`;
+                    teksMyPet += `🛡️ *Armor:* ${namaArmor}\n`;
+                });
+            }
+        }
+
+        if (!punyaPeliharaan) {
+            return await sock.sendMessage(chatId, { text: `🐾 Hai *${pushname}*, kamu belum memiliki peliharaan sama sekali. Kunjungi \`!tokohewan\` untuk mengadopsi!` }, { quoted: msg });
+        }
+
+        teksMyPet += `========================\n`;
+        teksMyPet += `_💡 Ketik !feed [ID] [makanan] untuk memberi makan._`;
+
+        // Mengirimkan pesan tanpa mention paksa
+        await sock.sendMessage(chatId, { text: teksMyPet, mentions: tagArray }, { quoted: msg });
     }
 };

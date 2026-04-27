@@ -1,11 +1,23 @@
 const fs = require('fs');
 const path = require('path');
 
+// --- DAFTAR GEAR TERBARU (12 ITEM) ---
 const katalogGear = {
+    // Senjata (+ Power)
     "cakar_besi": { nama: "Cakar Besi", tipe: "senjata", stat: 50 },
-    "taring_naga": { nama: "Taring Naga", tipe: "senjata", stat: 200 },
+    "gigi_beracun": { nama: "Gigi Beracun", tipe: "senjata", stat: 120 },
+    "cakar_baja": { nama: "Cakar Baja Titanium", tipe: "senjata", stat: 250 },
+    "taring_naga": { nama: "Taring Naga Api", tipe: "senjata", stat: 450 },
+    "pedang_excalibur": { nama: "Pedang Excalibur", tipe: "senjata", stat: 800 },
+    "sabit_kematian": { nama: "Sabit Kematian", tipe: "senjata", stat: 1500 },
+    
+    // Armor (+ Health/HP)
     "kalung_darah": { nama: "Kalung Darah", tipe: "armor", stat: 200 },
-    "zirah_titanium": { nama: "Zirah Titanium", tipe: "armor", stat: 800 }
+    "zirah_besi": { nama: "Zirah Besi", tipe: "armor", stat: 500 },
+    "zirah_titanium": { nama: "Zirah Titanium", tipe: "armor", stat: 1000 },
+    "sisik_naga": { nama: "Sisik Naga Kebal", tipe: "armor", stat: 2000 },
+    "helm_spartan": { nama: "Helm Spartan", tipe: "armor", stat: 3500 },
+    "aura_dewa": { nama: "Aura Dewa Pelindung", tipe: "armor", stat: 6000 }
 };
 
 module.exports = {
@@ -17,45 +29,83 @@ module.exports = {
         const senderId = msg.key.participant || msg.key.remoteJid;
         const senderNumber = senderId.replace(/:\d+/, '').split('@')[0];
 
-        if (args.length < 2) return await sock.sendMessage(chatId, { text: '⚠️ Format salah!\nContoh: `!pakai 1 cakar_besi` (Memasang Cakar Besi ke Pet ID 1)' }, { quoted: msg });
+        if (args.length < 2) {
+            return await sock.sendMessage(chatId, { text: '⚠️ Format salah!\nContoh: `!pakai 1 cakar_besi`\n_(Memasang Cakar Besi ke Pet ID 1)_' }, { quoted: msg });
+        }
 
-        const petId = parseInt(args[0]);
+        const petId = args[0]; 
         const idItem = args[1].toLowerCase();
 
-        if (!katalogGear[idItem]) return await sock.sendMessage(chatId, { text: '⚠️ Gear tersebut tidak terdaftar di sistem.' }, { quoted: msg });
-        if (!global.db.inventory[senderNumber] || !global.db.inventory[senderNumber][idItem] || global.db.inventory[senderNumber][idItem] <= 0) {
-            return await sock.sendMessage(chatId, { text: `⚠️ Kamu tidak memiliki *${katalogGear[idItem].nama}* di inventory!` }, { quoted: msg });
+        if (!katalogGear[idItem]) {
+            return await sock.sendMessage(chatId, { text: `⚠️ Gear dengan kode "${idItem}" tidak terdaftar di sistem Blacksmith.` }, { quoted: msg });
+        }
+        
+        // --- 🛡️ PERBAIKAN BUG INVENTORY UNDEFINED 🛡️ ---
+        if (!global.db.inventory) {
+            const invPath = path.join(process.cwd(), 'data/inventory.json');
+            if (fs.existsSync(invPath)) {
+                global.db.inventory = JSON.parse(fs.readFileSync(invPath, 'utf-8'));
+            } else {
+                global.db.inventory = {};
+            }
+        }
+        if (!global.db.inventory[senderNumber]) {
+            global.db.inventory[senderNumber] = {};
+        }
+
+        // Mengecek apakah pemain punya barangnya
+        if (!global.db.inventory[senderNumber][idItem] || global.db.inventory[senderNumber][idItem] <= 0) {
+            return await sock.sendMessage(chatId, { text: `⚠️ Kamu tidak memiliki *${katalogGear[idItem].nama}* di dalam tas (!inv)!` }, { quoted: msg });
         }
 
         const petList = global.db.pet[senderNumber] || [];
-        const petIndex = petList.findIndex(p => p.id === petId);
+        const petIndex = petList.findIndex(p => p.id == petId); 
 
-        if (petIndex === -1) return await sock.sendMessage(chatId, { text: `⚠️ Kamu tidak memiliki pet dengan ID ${petId}.` }, { quoted: msg });
-
-        const petTarget = petList[petIndex];
-        const tipeGear = katalogGear[idItem].tipe; // "senjata" atau "armor"
-
-        // Inisialisasi slot gear di pet jika belum ada
-        if (!petTarget.gear) petTarget.gear = { senjata: null, armor: null };
-
-        // Copot gear lama jika ada, dan kembalikan ke inventory
-        if (petTarget.gear[tipeGear]) {
-            const gearLama = petTarget.gear[tipeGear];
-            global.db.inventory[senderNumber][gearLama] = (global.db.inventory[senderNumber][gearLama] || 0) + 1;
+        if (petIndex === -1) {
+            return await sock.sendMessage(chatId, { text: `⚠️ Kamu tidak memiliki peliharaan dengan ID [${petId}].` }, { quoted: msg });
         }
 
-        // Pasang gear baru dan kurangi dari inventory
+        const petTarget = petList[petIndex];
+        const tipeGear = katalogGear[idItem].tipe; 
+
+        if (!petTarget.gear) petTarget.gear = { senjata: null, armor: null };
+
+        // Sistem Copot & Pasang Gear
+        if (petTarget.gear[tipeGear]) {
+            const gearLama = petTarget.gear[tipeGear];
+            
+            // Kembalikan ke tas
+            global.db.inventory[senderNumber][gearLama] = (global.db.inventory[senderNumber][gearLama] || 0) + 1;
+            
+            // Cabut efek lama
+            if (katalogGear[gearLama]) {
+                if (tipeGear === 'armor') {
+                    petTarget.health = Math.max(100, (petTarget.health || 100) - katalogGear[gearLama].stat);
+                } else if (tipeGear === 'senjata') {
+                    petTarget.power = Math.max(0, (petTarget.power || 0) - katalogGear[gearLama].stat);
+                }
+            }
+        }
+
+        // Pasang gear baru
         petTarget.gear[tipeGear] = idItem;
         global.db.inventory[senderNumber][idItem] -= 1;
 
-        // Jika itu Armor, langsung tambah HP (sebagai bonus max HP)
         if (tipeGear === 'armor') {
-            petTarget.hp += katalogGear[idItem].stat;
+            petTarget.health = (petTarget.health || 100) + katalogGear[idItem].stat;
+        } else if (tipeGear === 'senjata') {
+            petTarget.power = (petTarget.power || 0) + katalogGear[idItem].stat;
         }
 
         fs.writeFileSync(path.join(process.cwd(), 'data/pet.json'), JSON.stringify(global.db.pet, null, 2));
         fs.writeFileSync(path.join(process.cwd(), 'data/inventory.json'), JSON.stringify(global.db.inventory, null, 2));
 
-        await sock.sendMessage(chatId, { text: `🛡️ *GEAR TERPASANG!*\n\n*${petTarget.nama}* sekarang menggunakan *${katalogGear[idItem].nama}*!\nKekuatan tempurnya telah meningkat tajam.` }, { quoted: msg });
+        let teksBerhasil = `🛡️ *GEAR BERHASIL TERPASANG!* 🛡️\n\n`;
+        teksBerhasil += `*${petTarget.nama}* sekarang mengenakan *${katalogGear[idItem].nama}*!\n\n`;
+        teksBerhasil += `✨ *Status Terbaru:*\n`;
+        teksBerhasil += `⚔️ Power: *${petTarget.power}*\n`;
+        teksBerhasil += `❤️ Max Health: *${petTarget.health}*`;
+
+        await sock.sendMessage(chatId, { text: teksBerhasil }, { quoted: msg });
     }
 };
