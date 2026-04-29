@@ -1,154 +1,178 @@
 [
   {
-    "nomor": "50273364009124",
-    "nama": "PRINCESS LEBAH",
-    "saldo": 106217,
-    "petScore": 197300,
-    "totalScore": 303517,
-    "petCount": 4
-  },
-  {
     "nomor": "21556944220222",
     "nama": "Salomon",
-    "saldo": 179001,
-    "petScore": 100600,
-    "totalScore": 279601,
+    "saldo": 200970,
+    "petScore": 103000,
+    "totalScore": 303970,
     "petCount": 1
+  },
+  {
+    "nomor": "50273364009124",
+    "nama": "PRINCESS LEBAH",
+    "saldo": 31316,
+    "petScore": 263200,
+    "totalScore": 294516,
+    "petCount": 6
   },
   {
     "nomor": "185925007056938",
     "nama": "Gya",
-    "saldo": 81276,
-    "petScore": 69740,
-    "totalScore": 151016,
-    "petCount": 4
+    "saldo": 23657,
+    "petScore": 142340,
+    "totalScore": 165997,
+    "petCount": 3
   },
   {
     "nomor": "29833430089855",
     "nama": "Noxelna",
-    "saldo": 20713,
-    "petScore": 100900,
-    "totalScore": 121613,
-    "petCount": 1
-  },
-  {
-    "nomor": "168032676651233",
-    "nama": "Bobi",
-    "saldo": 109913,
-    "petScore": 6700,
-    "totalScore": 116613,
+    "saldo": 33584,
+    "petScore": 108700,
+    "totalScore": 142284,
     "petCount": 1
   },
   {
     "nomor": "1435089526784",
-    "nama": "onyx",
-    "saldo": 23586,
-    "petScore": 84500,
-    "totalScore": 108086,
+    "nama": "pet jembut lentik",
+    "saldo": 31497,
+    "petScore": 85200,
+    "totalScore": 116697,
     "petCount": 2
+  },
+  {
+    "nomor": "168032676651233",
+    "nama": "Bobi",
+    "saldo": 108439,
+    "petScore": 6700,
+    "totalScore": 115139,
+    "petCount": 1
   },
   {
     "nomor": "209173564367025",
     "nama": "Barkah",
-    "saldo": 887,
+    "saldo": 4644,
     "petScore": 84500,
-    "totalScore": 85387,
+    "totalScore": 89144,
+    "petCount": 2
+  },
+  {
+    "nomor": "111416384184361",
+    "nama": "Alwi Kerenz",
+    "saldo": 19500,
+    "petScore": 55100,
+    "totalScore": 74600,
+    "petCount": 1
+  },
+  {
+    "nomor": "178392120950960",
+    "nama": "pianlyn",
+    "saldo": 17330,
+    "petScore": 46700,
+    "totalScore": 64030,
     "petCount": 2
   },
   {
     "nomor": "179165332521048",
     "nama": "iyann",
-    "saldo": 13862,
+    "saldo": 12475,
     "petScore": 40900,
-    "totalScore": 54762,
+    "totalScore": 53375,
     "petCount": 4
   },
   {
-    "nomor": "256886758719623",
-    "nama": "[Belum Daftar] - 256886758719623",
-    "saldo": 3711,
-    "petScore": 48800,
-    "totalScore": 52511,
-    "petCount": 2
-  },
-  {
-    "nomor": "178392120950960",
-    "nama": "[Belum Daftar] - 178392120950960",
-    "saldo": 3601,
-    "petScore": 46700,
-    "totalScore": 50301,
-    "petCount": 2
-  },
-  {
-    "nomor": "75038078300307",
-    "nama": "Zein Haydar",
-    "saldo": 6250,
-    "petScore": 29400,
-    "totalScore": 35650,
+    "nomor": "175518569762827",
+    "nama": "Sora Kijima",
+    "saldo": 24182,
+    "petScore": 27900,
+    "totalScore": 52082,
     "petCount": 1
   },
   {
-    "nomor": "111416384184361",
-    "nama": "Alwi Kerenz",
-    "saldo": 31084,
+    "nomor": "256886758719623",
+    "nama": "Rivallyn",
+    "saldo": 332,
+    "petScore": 50200,
+    "totalScore": 50532,
+    "petCount": 2
+  },
+  {
+    "nomor": "38517367435469",
+    "nama": "taqim",
+    "saldo": 34616,
     "petScore": 0,
-    "totalScore": 31084,
+    "totalScore": 34616,
     "petCount": 0
   },
   {
     "nomor": "46446447456430",
     "nama": "[Belum Daftar] - 46446447456430",
-    "saldo": 8345,
+    "saldo": 7757,
     "petScore": 15900,
-    "totalScore": 24245,
+    "totalScore": 23657,
     "petCount": 2
   },
   {
-    "nomor": "38517367435469",
-    "nama": "[Belum Daftar] - 38517367435469",
-    "saldo": 18122,
+    "nomor": "160580908396709",
+    "nama": "[Belum Daftar] - 160580908396709",
+    "saldo": 13897,
     "petScore": 0,
-    "totalScore": 18122,
-    "petCount": 0
-  },
-  {
-    "nomor": "94142025728098",
-    "nama": "[Belum Daftar] - 94142025728098",
-    "saldo": 5153,
-    "petScore": 6320,
-    "totalScore": 11473,
-    "petCount": 1
-  },
-  {
-    "nomor": "230240831971567",
-    "nama": "Daffa Arvasatya",
-    "saldo": 9644,
-    "petScore": 0,
-    "totalScore": 9644,
+    "totalScore": 13897,
     "petCount": 0
   },
   {
     "nomor": "64592063512630",
     "nama": "ptr.s",
-    "saldo": 7490,
+    "saldo": 10515,
     "petScore": 0,
-    "totalScore": 7490,
+    "totalScore": 10515,
     "petCount": 0
   },
   {
-    "nomor": "175518569762827",
-    "nama": "Sora Kijima",
-    "saldo": 4536,
+    "nomor": "230206639992897",
+    "nama": "[Belum Daftar] - 230206639992897",
+    "saldo": 7395,
     "petScore": 0,
-    "totalScore": 4536,
+    "totalScore": 7395,
     "petCount": 0
+  },
+  {
+    "nomor": "75038078300307",
+    "nama": "Zein Haydar",
+    "saldo": 3600,
+    "petScore": 3060,
+    "totalScore": 6660,
+    "petCount": 1
+  },
+  {
+    "nomor": "94142025728098",
+    "nama": "[Belum Daftar] - 94142025728098",
+    "saldo": 5255,
+    "petScore": 0,
+    "totalScore": 5255,
+    "petCount": 0
+  },
+  {
+    "nomor": "71129624518729",
+    "nama": "abeu",
+    "saldo": 766,
+    "petScore": 1300,
+    "totalScore": 2066,
+    "petCount": 1
   },
   {
     "nomor": "103165248712855",
     "nama": "[Belum Daftar] - 103165248712855",
-    "saldo": 1464,
+    "saldo": 1476,
     "petScore": 0,
-    "totalScore": 1464,
+    "totalScore": 1476,
+    "petCount": 0
+  },
+  {
+    "nomor": "261224373690436",
+    "nama": "[Belum Daftar] - 261224373690436",
+    "saldo": 1000,
+    "petScore": 0,
+    "totalScore": 1000,
     "petCount": 0
   },
   {
@@ -160,14 +184,6 @@
     "petCount": 0
   },
   {
-    "nomor": "231250417713221",
-    "nama": "[Belum Daftar] - 231250417713221",
-    "saldo": 692,
-    "petScore": 0,
-    "totalScore": 692,
-    "petCount": 0
-  },
-  {
     "nomor": "202392096251999",
     "nama": "[Belum Daftar] - 202392096251999",
     "saldo": 581,
@@ -176,11 +192,59 @@
     "petCount": 0
   },
   {
+    "nomor": "154705393094717",
+    "nama": "[Belum Daftar] - 154705393094717",
+    "saldo": 286,
+    "petScore": 0,
+    "totalScore": 286,
+    "petCount": 0
+  },
+  {
+    "nomor": "196993574010939",
+    "nama": "[Belum Daftar] - 196993574010939",
+    "saldo": 266,
+    "petScore": 0,
+    "totalScore": 266,
+    "petCount": 0
+  },
+  {
+    "nomor": "231250417713221",
+    "nama": "Fajar",
+    "saldo": 223,
+    "petScore": 0,
+    "totalScore": 223,
+    "petCount": 0
+  },
+  {
     "nomor": "120363406553801682",
     "nama": "[Belum Daftar] - 120363406553801682",
     "saldo": 161,
     "petScore": 0,
     "totalScore": 161,
+    "petCount": 0
+  },
+  {
+    "nomor": "189094994911416",
+    "nama": "[Belum Daftar] - 189094994911416",
+    "saldo": 45,
+    "petScore": 0,
+    "totalScore": 45,
+    "petCount": 0
+  },
+  {
+    "nomor": "252806086836289",
+    "nama": "[Belum Daftar] - 252806086836289",
+    "saldo": 9,
+    "petScore": 0,
+    "totalScore": 9,
+    "petCount": 0
+  },
+  {
+    "nomor": "255327870169319",
+    "nama": "[Belum Daftar] - 255327870169319",
+    "saldo": 4,
+    "petScore": 0,
+    "totalScore": 4,
     "petCount": 0
   }
 ]

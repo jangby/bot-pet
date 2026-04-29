@@ -1,0 +1,316 @@
+{
+  "lelang": {},
+  "tokoPemain": {
+    "21556944220222": {
+      "nama": "Lisensi Toko Serba Ada",
+      "kategori": "serba_ada",
+      "etalase": {
+        "daging_ayam": {
+          "stok": 0,
+          "harga": 90
+        },
+        "daging_sapi": {
+          "stok": 0,
+          "harga": 160
+        },
+        "tulang_iga": {
+          "stok": 9,
+          "harga": 120
+        },
+        "sosis_daging": {
+          "stok": 15,
+          "harga": 70
+        },
+        "gandum": {
+          "stok": 20,
+          "harga": 60
+        },
+        "wortel": {
+          "stok": 11,
+          "harga": 80
+        },
+        "apel": {
+          "stok": 20,
+          "harga": 110
+        },
+        "rumput_sultan": {
+          "stok": 15,
+          "harga": 160
+        },
+        "ikan_kecil": {
+          "stok": 15,
+          "harga": 70
+        },
+        "ikan_salmon": {
+          "stok": 20,
+          "harga": 210
+        },
+        "udang": {
+          "stok": 6,
+          "harga": 110
+        },
+        "cumi": {
+          "stok": 5,
+          "harga": 130
+        },
+        "kristal_mana": {
+          "stok": 15,
+          "harga": 560
+        },
+        "buah_surga": {
+          "stok": 10,
+          "harga": 860
+        },
+        "elixir_murni": {
+          "stok": 7,
+          "harga": 1310
+        },
+        "pil_ringan": {
+          "stok": 10,
+          "harga": 200
+        },
+        "perban": {
+          "stok": 15,
+          "harga": 150
+        },
+        "vitamin": {
+          "stok": 8,
+          "harga": 310
+        },
+        "antibiotik": {
+          "stok": 8,
+          "harga": 480
+        },
+        "salep_luka": {
+          "stok": 5,
+          "harga": 350
+        }
+      },
+      "tokenWeb": "yqy7zghnmeo",
+      "pendapatan": 266730,
+      "terakhirLaku": 1777466248179
+    },
+    "75038078300307": {
+      "nama": "Lisensi Toko Serba Ada",
+      "kategori": "serba_ada",
+      "etalase": {
+        "daging_ayam": {
+          "stok": 50,
+          "harga": 60
+        },
+        "daging_sapi": {
+          "stok": 10,
+          "harga": 160
+        },
+        "tulang_iga": {
+          "stok": 18,
+          "harga": 100
+        },
+        "sosis_daging": {
+          "stok": 50,
+          "harga": 60
+        },
+        "gandum": {
+          "stok": 50,
+          "harga": 50
+        },
+        "wortel": {
+          "stok": 38,
+          "harga": 60
+        },
+        "apel": {
+          "stok": 45,
+          "harga": 80
+        },
+        "rumput_sultan": {
+          "stok": 25,
+          "harga": 120
+        },
+        "ikan_kecil": {
+          "stok": 12,
+          "harga": 50
+        },
+        "ikan_salmon": {
+          "stok": 14,
+          "harga": 170
+        },
+        "udang": {
+          "stok": 10,
+          "harga": 100
+        },
+        "cumi": {
+          "stok": 10,
+          "harga": 120
+        },
+        "kristal_mana": {
+          "stok": 10,
+          "harga": 600
+        },
+        "buah_surga": {
+          "stok": 10,
+          "harga": 850
+        },
+        "elixir_murni": {
+          "stok": 5,
+          "harga": 1300
+        },
+        "pil_ringan": {
+          "stok": 8,
+          "harga": 170
+        },
+        "perban": {
+          "stok": 30,
+          "harga": 120
+        },
+        "vitamin": {
+          "stok": 10,
+          "harga": 280
+        },
+        "antibiotik": {
+          "stok": 7,
+          "harga": 520
+        },
+        "salep_luka": {
+          "stok": 5,
+          "harga": 350
+        }
+      },
+      "tokenWeb": "up2flv31ihg",
+      "pendapatan": 72890,
+      "terakhirLaku": 1777473349046
+    }
+  },
+  "milestoneToko": 10,
+  "pasarInduk": {
+    "karnivora": {
+      "daging_ayam": {
+        "nama": "Daging Ayam Brolier",
+        "modal": 50,
+        "efek": "+20 Kenyang",
+        "tipe": "makanan"
+      },
+      "daging_sapi": {
+        "nama": "Daging Sapi Premium",
+        "modal": 120,
+        "efek": "+50 Kenyang",
+        "tipe": "makanan"
+      },
+      "tulang_iga": {
+        "nama": "Tulang Iga Segar",
+        "modal": 80,
+        "efek": "+30 Kenyang",
+        "tipe": "makanan"
+      },
+      "sosis_daging": {
+        "nama": "Sosis Daging Olahan",
+        "modal": 30,
+        "efek": "+10 Kenyang",
+        "tipe": "makanan"
+      }
+    },
+    "herbivora": {
+      "gandum": {
+        "nama": "Gandum Kering",
+        "modal": 25,
+        "efek": "+15 Kenyang",
+        "tipe": "makanan"
+      },
+      "wortel": {
+        "nama": "Wortel Segar",
+        "modal": 40,
+        "efek": "+25 Kenyang",
+        "tipe": "makanan"
+      },
+      "apel": {
+        "nama": "Apel Merah Manis",
+        "modal": 60,
+        "efek": "+35 Kenyang",
+        "tipe": "makanan"
+      },
+      "rumput_sultan": {
+        "nama": "Rumput Sultan Berkualitas",
+        "modal": 100,
+        "efek": "+50 Kenyang",
+        "tipe": "makanan"
+      }
+    },
+    "pescivora": {
+      "ikan_kecil": {
+        "nama": "Ikan Teri Air Tawar",
+        "modal": 30,
+        "efek": "+15 Kenyang",
+        "tipe": "makanan"
+      },
+      "ikan_salmon": {
+        "nama": "Ikan Salmon Samudra",
+        "modal": 150,
+        "efek": "+60 Kenyang",
+        "tipe": "makanan"
+      },
+      "udang": {
+        "nama": "Udang Kupas",
+        "modal": 70,
+        "efek": "+30 Kenyang",
+        "tipe": "makanan"
+      },
+      "cumi": {
+        "nama": "Cumi-cumi Mentah",
+        "modal": 90,
+        "efek": "+40 Kenyang",
+        "tipe": "makanan"
+      }
+    },
+    "mythical": {
+      "kristal_mana": {
+        "nama": "Kristal Mana Biru",
+        "modal": 500,
+        "efek": "+100 Kenyang & Energi",
+        "tipe": "makanan"
+      },
+      "buah_surga": {
+        "nama": "Buah Eden",
+        "modal": 800,
+        "efek": "+100 Kenyang & +10 XP",
+        "tipe": "makanan"
+      },
+      "elixir_murni": {
+        "nama": "Tetesan Elixir Murni",
+        "modal": 1200,
+        "efek": "Kenyang Max & Imunitas",
+        "tipe": "makanan"
+      }
+    },
+    "apotek": {
+      "pil_ringan": {
+        "nama": "Pil Ringan",
+        "modal": 150,
+        "kegunaan": "Menyembuhkan sakit pencernaan",
+        "tipe": "obat"
+      },
+      "perban": {
+        "nama": "Perban Steril",
+        "modal": 100,
+        "kegunaan": "Memulihkan luka luar akibat PvP",
+        "tipe": "obat"
+      },
+      "vitamin": {
+        "nama": "Vitamin Booster",
+        "modal": 250,
+        "kegunaan": "Meningkatkan imunitas",
+        "tipe": "obat"
+      },
+      "antibiotik": {
+        "nama": "Antibiotik Dosis Tinggi",
+        "modal": 450,
+        "kegunaan": "Menyembuhkan sakit keras",
+        "tipe": "obat"
+      },
+      "salep_luka": {
+        "nama": "Salep Luka Ajaib",
+        "modal": 300,
+        "kegunaan": "Memulihkan HP pet",
+        "tipe": "obat"
+      }
+    }
+  }
+}

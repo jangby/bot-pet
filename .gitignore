@@ -7,7 +7,7 @@ auth_info_baileys/
 session/
 
 # Database Dinamis (Agar data pemain lokal tidak menimpa data server)
-data/*.json
+#data/*.json
 
 # File log dan environment
 npm-debug.log

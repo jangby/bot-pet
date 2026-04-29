@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = {
-    name: 'kawin',
+    name: 'kawinn',
     description: 'Menikahkan pet dengan pet milik pemain lain',
 
     async execute(sock, msg, args) {
