@@ -6,7 +6,7 @@ module.exports = {
         const chatId = msg.key.remoteJid;
         
         // Sesuaikan domain ini dengan domain atau IP hosting kamu
-        const linkPanduan = 'https://d687-180-241-241-59.ngrok-free.app/panduan'; 
+        const linkPanduan = 'https://093c-180-241-240-20.ngrok-free.app/panduan'; 
 
         const teksPanduan = 
 `📖 *PANDUAN LENGKAP NEXUS PET* 📖

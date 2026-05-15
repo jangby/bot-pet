@@ -18,8 +18,12 @@ global.MAX_SUPPLY = 1000000;
 global.db = {
     bank: { brankas: global.MAX_SUPPLY, kredit: {} },
     player: {}, 
-    pet: {},    
-    market: {}  
+    pet: {},     
+    market: {},
+    inventory: {},
+    tantanganDuel: {},
+    proposalKawin: {},
+    pemilu: { status: 'idle', kandidat: [], pemilih: [], fee: 10000, chatId: '', timer: null }
 };
 
 // --- 💾 SISTEM DATABASE & AUDIT EKONOMI 💾 ---
@@ -27,13 +31,15 @@ function loadDatabase() {
     const dataDir = path.join(process.cwd(), 'data');
     if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir);
 
-    const files = ['bank', 'player', 'pet', 'market', 'inventory'];
+    const files = ['bank', 'player', 'pet', 'market', 'inventory', 'petBersama'];
     files.forEach(file => {
         const filePath = path.join(dataDir, `${file}.json`);
         if (fs.existsSync(filePath)) {
             global.db[file] = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
         } else {
-            fs.writeFileSync(filePath, JSON.stringify(global.db[file], null, 2));
+            const initialData = file === 'petBersama' ? [] : (global.db[file] || {});
+            fs.writeFileSync(filePath, JSON.stringify(initialData, null, 2));
+            global.db[file] = initialData;
         }
     });
 
@@ -51,254 +57,216 @@ function auditEkonomi() {
     for (const nomor in global.db.player) {
         uangDiPemain += (global.db.player[nomor].saldo || 0);
     }
-
     const uangDiBank = global.db.bank.brankas;
     const totalUangSistem = uangDiPemain + uangDiBank;
 
     if (totalUangSistem !== global.MAX_SUPPLY) {
-        console.log(`⚠️ [PERINGATAN] Anomali ekonomi terdeteksi! Total: ${totalUangSistem}`);
-        global.db.bank.brankas = global.MAX_SUPPLY - uangDiPemain;
-        fs.writeFileSync(path.join(process.cwd(), 'data/bank.json'), JSON.stringify(global.db.bank, null, 2));
-        console.log(`[AUDIT] Koreksi otomatis: Brankas Bank disesuaikan menjadi ${global.db.bank.brankas} Nexus.`);
+        console.log(`⚠️ [PERINGATAN] Anomali ekonomi! Total: ${totalUangSistem}`);
+        global.db.bank.brankas = Math.max(0, global.MAX_SUPPLY - uangDiPemain);
+        fs.writeFileSync('./data/bank.json', JSON.stringify(global.db.bank, null, 2));
     } else {
-        console.log(`✅ [AUDIT] Ekonomi stabil. Total sirkulasi: ${totalUangSistem} Nexus.`);
+        console.log(`✅ [AUDIT] Ekonomi stabil. Sirkulasi: ${totalUangSistem} Nexus.`);
     }
 }
 
 loadDatabase();
-// -----------------------------------------------
 
+// --- 🚀 KONEKSI UTAMA WHATSAPP 🚀 ---
 async function connectToWhatsApp() {
     const { state, saveCreds } = await useMultiFileAuthState('auth_info_baileys');
     const { version, isLatest } = await fetchLatestBaileysVersion();
     
-    console.log(`[SYSTEM] Menggunakan WA Web v${version.join('.')} (Terbaru: ${isLatest})`);
+    console.log(`[SYSTEM] WhatsApp Web v${version.join('.')} (Terbaru: ${isLatest})`);
 
     const sock = makeWASocket({
         version,
         auth: state,
         logger: pino({ level: 'silent' }),
-        browser: ['Ubuntu', 'Chrome', '20.0.04'] 
+        browser: ['Republik Nexus', 'Chrome', '1.0.0'] 
     });
 
-    // --- MESIN PEMANTAU LELANG OTOMATIS (ANTI-CRASH) ---
+    // --- 🏪 MESIN PEMANTAU LELANG OTOMATIS ---
     if (lelangInterval) clearInterval(lelangInterval);
     lelangInterval = setInterval(async () => {
-        // ✨ DIBUNGKUS TRY-CATCH AGAR BOT TIDAK MATI ✨
         try {
-            if (!global.db.market || !global.db.market.lelang || !global.db.market.lelang['BANK_SENTRAL']) return;
-
+            if (!global.db.market?.lelang?.['BANK_SENTRAL']) return;
             const lelang = global.db.market.lelang['BANK_SENTRAL'];
-            if (!lelang.chatId) return; 
-
             const sekarang = Date.now();
-            const durasiLelang = 60 * 60 * 1000; 
-            const intervalPengumuman = 5 * 60 * 1000; 
-            const waktuSelesai = lelang.waktuSita + durasiLelang;
+            const waktuSelesai = lelang.waktuSita + (60 * 60 * 1000);
 
             if (sekarang >= waktuSelesai) {
                 if (lelang.pemenangSementara) {
                     const pemenang = lelang.pemenangSementara;
-                    const harga = lelang.bidTertinggi;
-
-                    global.db.bank.brankas += harga;
-                    
+                    global.db.bank.brankas += lelang.bidTertinggi;
                     global.db.market.tokoPemain[pemenang] = {
                         nama: lelang.nama,
                         kategori: 'serba_ada',
                         etalase: lelang.etalase || {},
                         tokenWeb: lelang.tokenWeb,
-                        pendapatan: 0,
-                        terakhirLaku: Date.now()
+                        pendapatan: 0, terakhirLaku: sekarang
                     };
-
-                    const teksMenang = `🎉 *LELANG RESMI DITUTUP!* 🎉\n\nWaktu 1 Jam telah habis!\nLisensi Toko Serba Ada jatuh ke tangan @${pemenang} dengan tawaran akhir *${harga.toLocaleString('id-ID')} 💠*!\n\n_Silakan cek !mytoko untuk mengelola toko monopoli milikmu._`;
-
-                    delete global.db.market.lelang['BANK_SENTRAL'];
-                    fs.writeFileSync('./data/market.json', JSON.stringify(global.db.market, null, 2));
-                    fs.writeFileSync('./data/bank.json', JSON.stringify(global.db.bank, null, 2));
-
-                    await sock.sendMessage(lelang.chatId, { text: teksMenang, mentions: [`${pemenang}@s.whatsapp.net`] });
-                } else {
-                    const teksBatal = `⚠️ *LELANG DIBATALKAN* ⚠️\n\nWaktu 1 Jam habis dan tidak ada satupun pemain yang berani menawar.\nLisensi ditarik kembali oleh Bank Sentral.`;
-                    delete global.db.market.lelang['BANK_SENTRAL'];
-                    fs.writeFileSync('./data/market.json', JSON.stringify(global.db.market, null, 2));
-                    await sock.sendMessage(lelang.chatId, { text: teksBatal });
+                    const tagPemenang = pemenang.length > 14 ? `${pemenang}@lid` : `${pemenang}@s.whatsapp.net`;
+                    await sock.sendMessage(lelang.chatId, { 
+                        text: `🎉 *LELANG DITUTUP!*\n\nLisensi jatuh ke tangan @${pemenang} seharga *${lelang.bidTertinggi.toLocaleString()} 💠*!`, 
+                        mentions: [tagPemenang] 
+                    });
                 }
-                return;
-            }
-
-            if (!lelang.lastAnnounce) lelang.lastAnnounce = lelang.waktuSita;
-            
-            if (sekarang - lelang.lastAnnounce >= intervalPengumuman) {
-                lelang.lastAnnounce = sekarang;
+                delete global.db.market.lelang['BANK_SENTRAL'];
                 fs.writeFileSync('./data/market.json', JSON.stringify(global.db.market, null, 2));
-
-                const sisaMenit = Math.ceil((waktuSelesai - sekarang) / 60000);
-                let teksUpdate = `📢 *UPDATE LELANG TOKO SEMENTARA* 📢\n\n⏳ Sisa Waktu Pelelangan: *${sisaMenit} Menit Lagi!*\n\n`;
-                
-                if (lelang.pemenangSementara) {
-                    teksUpdate += `🔥 *Penawar Tertinggi Saat Ini:*\n👤 @${lelang.pemenangSementara}\n💰 Nominal: *${lelang.bidTertinggi.toLocaleString('id-ID')} 💠*\n\n_Ada yang berani menawar lebih tinggi? Ketik !bid BANK_SENTRAL [nominal]_`;
-                    await sock.sendMessage(lelang.chatId, { text: teksUpdate, mentions: [`${lelang.pemenangSementara}@s.whatsapp.net`] });
-                } else {
-                    teksUpdate += `_Belum ada satu pun pemain yang menawar!\nKetik !bid BANK_SENTRAL [nominal] sekarang._`;
-                    await sock.sendMessage(lelang.chatId, { text: teksUpdate });
-                }
             }
-        } catch (error) {
-            console.log("[SYSTEM] Tertunda: Menunggu cache Baileys siap untuk pengumuman lelang...");
-        }
-    }, 60000); 
+        } catch (e) { console.log("[ERROR] Lelang Interval:", e); }
+    }, 60000);
 
-    // --- INISIALISASI COMMAND HANDLER ---
+    // --- 📂 LOAD COMMANDS ---
     sock.commands = new Map();
-    const folders = ['perbankan', 'pet_core', 'pvp_coop', 'toko_player', 'panduan'];
-    
-    console.log('[SYSTEM] Memuat module perintah...');
+    const folders = ['kemenkeu', 'kementan', 'kemenhan', 'kemendag', 'kemenesdm', 'panduan'];
     for (const folder of folders) {
         const folderPath = path.join(__dirname, `commands/${folder}`);
         if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
-        
-        const commandFiles = fs.readdirSync(folderPath).filter(file => file.endsWith('.js'));
-        for (const file of commandFiles) {
+        fs.readdirSync(folderPath).filter(f => f.endsWith('.js')).forEach(file => {
             const command = require(`./commands/${folder}/${file}`);
             sock.commands.set(command.name, command);
-        }
+        });
     }
-    console.log(`[SYSTEM] Berhasil memuat ${sock.commands.size} perintah.`);
 
     sock.ev.on('creds.update', saveCreds);
-
     sock.ev.on('connection.update', (update) => {
         const { connection, lastDisconnect, qr } = update;
         if (qr) qrcode.generate(qr, { small: true });
-        
         if (connection === 'close') {
-            const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
-            if (shouldReconnect) connectToWhatsApp();
-        } else if (connection === 'open') {
-            console.log('\n✅ Nexus Core berhasil online!');
-        }
+            if (lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut) connectToWhatsApp();
+        } else if (connection === 'open') { console.log('\n✅ Nexus Core Online!'); }
     });
 
+    // --- 📨 PESAN MASUK ---
     sock.ev.on('messages.upsert', async m => {
         const msg = m.messages[0];
         if (!msg.message || msg.key.fromMe) return;
 
-        // --- SENSOR REPLY "GAS" ---
-        const teksPesanMasuk = msg.message.conversation || msg.message.extendedTextMessage?.text || "";
+        const teksPesan = (msg.message.conversation || msg.message.extendedTextMessage?.text || "").toLowerCase().trim();
+        const replierId = (msg.key.participant || msg.key.remoteJid).replace(/:\d+/, '').split('@')[0];
         const idPesanDibalas = msg.message.extendedTextMessage?.contextInfo?.stanzaId;
 
-        if (idPesanDibalas && teksPesanMasuk.toLowerCase().trim() === 'gas') {
-            const replierId = msg.key.participant || msg.key.remoteJid;
-            const replierNumber = replierId.replace(/:\d+/, '').split('@')[0];
+        // --- ⚔️ LOGIKA "GAS" (DUEL & KAWIN) ---
+        if (teksPesan === 'gas' && idPesanDibalas) {
+            
+            // 1. DUEL HANDLER
+            if (global.db.tantanganDuel?.[idPesanDibalas]) {
+                const data = global.db.tantanganDuel[idPesanDibalas];
+                if (data.target === replierId) {
+                    const p1 = data.penantang, p2 = data.target;
+                    const pet1 = global.db.pet[p1].find(p => p.id == data.idPetPenantang);
+                    const pet2 = global.db.pet[p2].find(p => p.id == data.idPetTarget);
 
-            if (global.db.tantanganDuel && global.db.tantanganDuel[idPesanDibalas]) {
-                const dataDuel = global.db.tantanganDuel[idPesanDibalas];
-                if (dataDuel.target === replierNumber) {
-                    const penantangNumber = dataDuel.penantang;
-                    const pet1 = global.db.pet[penantangNumber].find(p => p.id === dataDuel.idPetPenantang);
-                    const pet2 = global.db.pet[replierNumber].find(p => p.id === dataDuel.idPetTarget);
-
-                    const rng1 = Math.floor(Math.random() * 20);
-                    const rng2 = Math.floor(Math.random() * 20);
-                    const power1 = (pet1.level * 5) + pet1.power + rng1;
-                    const power2 = (pet2.level * 5) + pet2.power + rng2;
-
-                    let pemenang, kalah, namaPemenang, namaKalah, hadiahNexus;
-
-                    if (power1 >= power2) {
-                        pemenang = pet1; kalah = pet2;
-                        namaPemenang = penantangNumber; namaKalah = replierNumber;
-                    } else {
-                        pemenang = pet2; kalah = pet1;
-                        namaPemenang = replierNumber; namaKalah = penantangNumber;
+                    if (!pet1 || !pet2) {
+                        delete global.db.tantanganDuel[idPesanDibalas];
+                        return await sock.sendMessage(msg.key.remoteJid, { text: '⚠️ Duel dibatalkan karena salah satu pet sudah tidak ada (terjual/hilang)!' }, { quoted: msg });
                     }
 
-                    hadiahNexus = 500; 
-                    if (global.db.player[namaKalah].saldo >= hadiahNexus) {
-                        global.db.player[namaKalah].saldo -= hadiahNexus;
-                        global.db.player[namaPemenang].saldo += hadiahNexus;
-                    }
+                    // Update 1 & 6: Power Calculation
+                    const b1 = pet1.buff || 0, b2 = pet2.buff || 0;
+                    const base1 = pet1.power + (pet1.level * 15) + b1;
+                    const base2 = pet2.power + (pet2.level * 15) + b2;
+                    const power1 = Math.floor(base1 * (0.9 + Math.random() * 0.2));
+                    const power2 = Math.floor(base2 * (0.9 + Math.random() * 0.2));
 
-                    pemenang.xp += 50;
-                    if (pemenang.xp >= 100) {
-                        pemenang.level += 1;
-                        pemenang.xp = 0;
-                    }
-                    kalah.kondisi = 'Sakit (Luka Fisik)';
-                    kalah.lapar = Math.max(0, kalah.lapar - 30);
+                    let win, lose, winN, loseN;
+                    if (power1 >= power2) { win = pet1; lose = pet2; winN = p1; loseN = p2; }
+                    else { win = pet2; lose = pet1; winN = p2; loseN = p1; }
 
-                    fs.writeFileSync(path.join(process.cwd(), 'data/pet.json'), JSON.stringify(global.db.pet, null, 2));
-                    fs.writeFileSync(path.join(process.cwd(), 'data/player.json'), JSON.stringify(global.db.player, null, 2));
+                    // MMR & Rewards
+                    const mmrW = Math.floor(Math.random() * 10) + 20;
+                    const mmrL = Math.floor(Math.random() * 5) + 10;
+                    global.db.player[winN].mmr = (global.db.player[winN].mmr || 0) + mmrW;
+                    global.db.player[loseN].mmr = Math.max(0, (global.db.player[loseN].mmr || 0) - mmrL);
+
+                    if (global.db.player[loseN].saldo >= 500) {
+                        global.db.player[loseN].saldo -= 500;
+                        global.db.player[winN].saldo += 500;
+                    }
+                    win.xp += 50; if (win.xp >= 100) { win.level++; win.xp = 0; }
+                    lose.kondisi = 'Sakit (Luka Fisik)'; lose.lapar = Math.max(0, lose.lapar - 30);
+                    pet1.buff = 0; pet2.buff = 0; // Reset Buff
+
+                    const tagW = winN.length > 14 ? `${winN}@lid` : `${winN}@s.whatsapp.net`;
+                    const tagL = loseN.length > 14 ? `${loseN}@lid` : `${loseN}@s.whatsapp.net`;
+                    
+                    const teks = `⚔️ *RANKED MATCH SELESAI*\n\n🏆 Win: *${win.nama}* (@${winN}) [+${mmrW} MMR]\n💀 Lose: *${lose.nama}* (@${loseN}) [-${mmrL} MMR]`;
+                    await sock.sendMessage(msg.key.remoteJid, { text: teks, mentions: [tagW, tagL] });
+                    
                     delete global.db.tantanganDuel[idPesanDibalas];
-
-                    const teksHasil = `⚔️ *HASIL PERTARUNGAN EPIC!* ⚔️\n\n${pet1.nama} (Power: ${power1}) 🆚 ${pet2.nama} (Power: ${power2})\n\n🏆 *PEMENANG: ${pemenang.nama}* milik @${namaPemenang}!\n${pemenang.nama} mendapatkan +50 XP!\n💸 Merampas uang ${hadiahNexus} 💠 dari pihak yang kalah!\n\n🚑 *KORBAN: ${kalah.nama}* milik @${namaKalah} terluka parah. Kondisinya sekarang: *Sakit (Luka Fisik)*. Beli Perban di Apotek terdekat!`;
-                    sock.sendMessage(dataDuel.chatId, { text: teksHasil, mentions: [`${namaPemenang}@s.whatsapp.net`, `${namaKalah}@s.whatsapp.net`] });
-                    return; 
+                    fs.writeFileSync('./data/pet.json', JSON.stringify(global.db.pet, null, 2));
+                    fs.writeFileSync('./data/player.json', JSON.stringify(global.db.player, null, 2));
                 }
             }
 
-            if (global.db.proposalKawin && global.db.proposalKawin[idPesanDibalas]) {
-                const dataKawin = global.db.proposalKawin[idPesanDibalas];
-                if (dataKawin.target === replierNumber) {
-                    if (!global.db.petBersama) global.db.petBersama = [];
-                    
-                    const newId = global.db.petBersama.length + 1;
-                    const gachaPower = Math.floor(Math.random() * 20) + 10;
+            // 2. KAWIN HANDLER (UPDATE: TURUN 3 LEVEL)
+            if (global.db.proposalKawin?.[idPesanDibalas]) {
+                const data = global.db.proposalKawin[idPesanDibalas];
+                if (data.target === replierId) {
+                    const ortu1 = global.db.pet[data.pengaju].find(p => p.id == data.idPetPengaju);
+                    const ortu2 = global.db.pet[data.target].find(p => p.id == data.idPetTarget);
+
+                    if (!ortu1 || !ortu2) {
+                        delete global.db.proposalKawin[idPesanDibalas];
+                        return await sock.sendMessage(msg.key.remoteJid, { text: '⚠️ Pernikahan batal karena salah satu pet sudah tidak ada (terjual/hilang)!' }, { quoted: msg });
+                    }
+
+                    ortu1.level = Math.max(1, ortu1.level - 3);
+                    ortu2.level = Math.max(1, ortu2.level - 3);
+                    const babyPower = Math.floor((ortu1.power + ortu2.power) * 0.3) + 20;
+                    const newId = `B${global.db.petBersama.length + 1}`;
 
                     global.db.petBersama.push({
-                        id: `B${newId}`, 
-                        ortu1: dataKawin.penawar,
-                        ortu2: dataKawin.target,
-                        nama: `Bayi ${dataKawin.spesies.split(' ')[0]}`,
-                        spesies: dataKawin.spesies,
-                        diet: dataKawin.diet,
-                        rarity: 'Common', 
-                        level: 1,
-                        xp: 0,
-                        health: 100,
-                        lapar: 100,
-                        kondisi: 'Sehat',
-                        power: gachaPower,
-                        lastFeed: Date.now()
+                        id: newId, ortu1: data.pengaju, ortu2: data.target,
+                        nama: `Bayi ${ortu1.spesies.trim()}`, spesies: ortu1.spesies,
+                        diet: ortu1.diet, rarity: ortu1.rarity, level: 1, xp: 0,
+                        health: 100, lapar: 100, kondisi: 'Sehat', power: babyPower, lastFeed: Date.now()
                     });
 
-                    fs.writeFileSync(path.join(process.cwd(), 'data/petBersama.json'), JSON.stringify(global.db.petBersama, null, 2));
-                    delete global.db.proposalKawin[idPesanDibalas]; 
+                    const tag1 = data.pengaju.length > 14 ? `${data.pengaju}@lid` : `${data.pengaju}@s.whatsapp.net`;
+                    const tag2 = data.target.length > 14 ? `${data.target}@lid` : `${data.target}@s.whatsapp.net`;
 
-                    const teksLahir = `🍼 *SELAMAT! BAYI TELAH LAHIR!* 🍼\n\nPernikahan direstui! Peliharaan milik @${dataKawin.penawar} dan @${dataKawin.target} telah melahirkan keturunan baru!\n\n👶 *Nama:* Bayi ${dataKawin.spesies.split(' ')[0]}\n🐾 *Spesies:* ${dataKawin.spesies}\nID Bersama: *B${newId}*\n\n_Kalian berdua bisa melihat anak ini di bagian bawah menu !mypet masing-masing!_`;
-                    sock.sendMessage(dataKawin.chatId, { text: teksLahir, mentions: [`${dataKawin.penawar}@s.whatsapp.net`, `${dataKawin.target}@s.whatsapp.net`] });
-                    return;
+                    await sock.sendMessage(msg.key.remoteJid, { 
+                        text: `🍼 *BAYI LAHIR!* Peliharaan @${data.pengaju} & @${data.target} punya anak (ID: ${newId}). Ortu turun 3 Level!`,
+                        mentions: [tag1, tag2]
+                    });
+
+                    delete global.db.proposalKawin[idPesanDibalas];
+                    fs.writeFileSync('./data/petBersama.json', JSON.stringify(global.db.petBersama, null, 2));
+                    fs.writeFileSync('./data/pet.json', JSON.stringify(global.db.pet, null, 2));
                 }
             }
         }
 
-        const pesanTeksFull = msg.message.conversation || msg.message.extendedTextMessage?.text || msg.message.imageMessage?.caption || '';
-        if (!pesanTeksFull.startsWith('!')) return;
+        // --- 🛠️ COMMAND HANDLER ---
+        const fullTeks = msg.message.conversation || msg.message.extendedTextMessage?.text || msg.message.imageMessage?.caption || '';
+        if (!fullTeks.startsWith('!')) return;
 
-        const argsArray = pesanTeksFull.slice(1).trim().split(/\s+/);
-        const commandName = argsArray.shift().toLowerCase();
+        const args = fullTeks.slice(1).trim().split(/\s+/);
+        const cmd = args.shift().toLowerCase();
+        const senderNumber = (msg.key.participant || msg.key.remoteJid).replace(/:\d+/, '').split('@')[0];
 
-        const senderId = msg.key.participant || msg.key.remoteJid;
-        const senderNumber = senderId.replace(/:\d+/, '').split('@')[0];
         if (!global.db.player[senderNumber]) {
             global.db.player[senderNumber] = { saldo: 0, reputasi: 0 };
-            fs.writeFileSync(path.join(process.cwd(), 'data/player.json'), JSON.stringify(global.db.player, null, 2));
+            fs.writeFileSync('./data/player.json', JSON.stringify(global.db.player, null, 2));
         }
 
-        if (sock.commands.has(commandName)) {
-            const command = sock.commands.get(commandName);
-            try {
-                await command.execute(sock, msg, argsArray);
-            } catch (error) {
-                console.error(`[ERROR] Gagal menjalankan perintah ${commandName}:`, error);
+        if (sock.commands.has(cmd)) {
+            // --- SISTEM LOCKDOWN PEMILU ---
+            if (global.db.pemilu.status !== 'idle') {
+                const allowed = ['pemilu', 'nyaleg', 'coblos', 'saldo', 'ktp', 'nama'];
+                if (!allowed.includes(cmd)) {
+                    return await sock.sendMessage(msg.key.remoteJid, { text: '🏛️ *HARI LIBUR NASIONAL!* Aktivitas ekonomi ditutup selama Pemilu.' }, { quoted: msg });
+                }
             }
+            try { await sock.commands.get(cmd).execute(sock, msg, args); } 
+            catch (e) { console.error(`[ERROR] CMD ${cmd}:`, e); }
         }
     });
-}
 
-const startWebServer = require('./server.js');
-startWebServer();
+    const startWebServer = require('./server.js');
+    startWebServer();
+}
 
 connectToWhatsApp();

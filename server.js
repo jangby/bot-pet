@@ -39,6 +39,12 @@ const defaultPasarInduk = {
         vitamin: { nama: "Vitamin Booster", modal: 250, kegunaan: "Meningkatkan imunitas", tipe: "obat" },
         antibiotik: { nama: "Antibiotik Dosis Tinggi", modal: 450, kegunaan: "Menyembuhkan sakit keras", tipe: "obat" },
         salep_luka: { nama: "Salep Luka Ajaib", modal: 300, kegunaan: "Memulihkan HP pet", tipe: "obat" }
+    },
+    mineral: {
+        batu_bara: { nama: "Batu Bara", modal: 50, kegunaan: "Bahan bakar industri", tipe: "material" },
+        bijih_besi: { nama: "Bijih Besi", modal: 150, kegunaan: "Bahan dasar peleburan", tipe: "material" },
+        emas: { nama: "Emas Murni", modal: 800, kegunaan: "Logam mulia bernilai tinggi", tipe: "material" },
+        berlian: { nama: "Berlian", modal: 3000, kegunaan: "Permata sangat langka", tipe: "material" }
     }
 };
 
@@ -646,7 +652,7 @@ app.get('/panduan', (req, res) => {
 
 function startWebServer() {
     app.listen(port, () => {
-        console.log(`[WEB SERVER] Dashboard Toko online di https://d687-180-241-241-59.ngrok-free.app`);
+        console.log(`[WEB SERVER] Dashboard Toko online di https://093c-180-241-240-20.ngrok-free.app`);
     });
 }
 
