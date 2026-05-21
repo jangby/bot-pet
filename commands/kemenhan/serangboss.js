@@ -76,27 +76,46 @@ module.exports = {
 
             const daftarMentions = [];
 
+            // Resolve LID ke nomor WA asli untuk mention
+            let groupParticipants = [];
+            if (chatId.endsWith('@g.us')) {
+                try {
+                    const metaGrup = await sock.groupMetadata(chatId);
+                    groupParticipants = metaGrup.participants;
+                } catch(e) {}
+            }
+
+            const resolveJid = (nomor) => {
+                if (groupParticipants.length > 0) {
+                    const part = groupParticipants.find(p =>
+                        (p.id && p.id.includes(nomor)) || (p.lid && p.lid.includes(nomor))
+                    );
+                    if (part && part.id.endsWith('@s.whatsapp.net')) return { jid: part.id, num: part.id.split('@')[0] };
+                }
+                return { jid: `${nomor}@s.whatsapp.net`, num: nomor };
+            };
+
             for (const [nomorPemain, dataPeserta] of Object.entries(global.db.boss.peserta)) {
-                // Dibagikan proporsional sesuai rasio damage yang diberikan
                 const porsiDamage = dataPeserta.damage / global.db.boss.maxHp;
                 let uangDidapat = Math.floor(totalRewardPool * porsiDamage);
-                
-                // Bonus UMR: Minimal dapet 1000 Nexus kalau ikut mukul
                 uangDidapat += 1000; 
-
-                // Batasi dengan ketersediaan kas negara
                 uangDidapat = Math.min(uangDidapat, Math.max(0, global.db.bank.brankas));
 
                 if (!global.db.player[nomorPemain]) global.db.player[nomorPemain] = { saldo: 0, reputasi: 0 };
-                
-                // Tambah Uang & Tambah 2 Bintang Reputasi (Penting untuk Limit Pinjam Bank!)
                 global.db.player[nomorPemain].saldo = (parseInt(global.db.player[nomorPemain].saldo) || 0) + uangDidapat;
                 global.db.bank.brankas -= uangDidapat;
                 global.db.player[nomorPemain].reputasi = (global.db.player[nomorPemain].reputasi || 0) + 2; 
 
-                teksKemenangan += `• @${nomorPemain}: *+${uangDidapat.toLocaleString('id-ID')} 💠* & +2 ⭐\n`;
-                daftarMentions.push(`${nomorPemain}@s.whatsapp.net`);
+                const r = resolveJid(nomorPemain);
+                teksKemenangan += `• @${r.num}: *+${uangDidapat.toLocaleString('id-ID')} 💪* & +2 ⭐\n`;
+                daftarMentions.push(r.jid);
             }
+
+            // Resolve last-hit sender juga
+            const rSender = resolveJid(senderNumber);
+            teksKemenangan = teksKemenangan
+                .replace(new RegExp(`@${senderNumber}`, 'g'), `@${rSender.num}`);
+            if (!daftarMentions.includes(rSender.jid)) daftarMentions.unshift(rSender.jid);
 
             // Simpan perubahan dan kosongkan data boss
             global.db.boss.peserta = {}; 

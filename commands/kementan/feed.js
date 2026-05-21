@@ -115,7 +115,14 @@ module.exports = {
         }
 
         // C. Eksekusi Makan Normal & Tambah XP
-        const poinKenyang = parseInt(infoMakanan.efek.replace(/[^0-9]/g, '')) || 20;
+        let poinKenyang = parseInt(infoMakanan.efek.replace(/[^0-9]/g, '')) || 20;
+        let teksBonusKenyang = '';
+
+        if (global.db.player[senderNumber].pasangan) {
+            poinKenyang += 10;
+            teksBonusKenyang = '\n💖 _(Nutrisi Cinta: Ekstra +10 Kenyang)_';
+        }
+
         petTarget.lapar = Math.min(100, laparSekarang + poinKenyang);
         petTarget.lastFeed = Date.now();
         tas[idMakananDitemukan] -= 1;
@@ -139,7 +146,7 @@ module.exports = {
         if (typeof petTarget.xp !== 'number') petTarget.xp = 0;
         petTarget.xp += xpMakan;
 
-        let teksKenyang = `🥩 *NYAM!*\n${petTarget.nama} memakan ${infoMakanan.nama} dengan lahap.\nStatus Kenyang: *${petTarget.lapar}%*\n🌟 _Mendapat +${xpMakan} XP_${efekBuff}`;
+        let teksKenyang = `🥩 *NYAM!*\n${petTarget.nama} memakan ${infoMakanan.nama} dengan lahap.\nStatus Kenyang: *${petTarget.lapar}%*${teksBonusKenyang}\n🌟 _Mendapat +${xpMakan} XP_${efekBuff}`;
 
         // D. Sistem Auto Level-Up Dinamis
         let targetXP = petTarget.level * 100; 

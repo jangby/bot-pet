@@ -53,6 +53,22 @@ module.exports = {
         global.db.player[senderNumber].saldo -= nominal;
         global.db.player[targetNumber].saldo = (parseInt(global.db.player[targetNumber].saldo) || 0) + nominal;
 
+        let teksCashback = '';
+        // --- CASHBACK CINTA (JIKA TRANSFER KE PASANGAN) ---
+        if (global.db.player[senderNumber].pasangan === targetNumber) {
+            let cashback = Math.floor(nominal * 0.05);
+            if (cashback > 1000) cashback = 1000;
+            
+            // Cek apakah bank masih sanggup mensubsidi cashback
+            if (global.db.bank.brankas >= cashback) {
+                global.db.player[senderNumber].saldo += cashback;
+                global.db.bank.brankas -= cashback;
+                teksCashback = `\n💖 _(Subsidi Bank: Kamu dapat Cashback Cinta sebesar *+${cashback.toLocaleString('id-ID')} 💠*)_`;
+                
+                fs.writeFileSync(path.join(process.cwd(), 'data/bank.json'), JSON.stringify(global.db.bank, null, 2));
+            }
+        }
+
         // Simpan pembaruan ke database
         fs.writeFileSync(path.join(process.cwd(), 'data/player.json'), JSON.stringify(global.db.player, null, 2));
 
@@ -64,7 +80,7 @@ Dana telah berhasil dikirimkan kepada @${targetNumber}!
 
 📝 *Rincian Transaksi:*
 • Nominal: *${nominal.toLocaleString('id-ID')} 💠*
-• Sisa Saldo Kamu: *${global.db.player[senderNumber].saldo.toLocaleString('id-ID')} 💠*
+• Sisa Saldo Kamu: *${global.db.player[senderNumber].saldo.toLocaleString('id-ID')} 💠*${teksCashback}
 
 _Terima kasih telah menggunakan layanan antar jemput dana Nexus._`;
 

@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { NGROK_URL } = require('../../config');
 
 module.exports = {
     name: 'klasemen',
@@ -73,7 +74,7 @@ module.exports = {
         if (!fs.existsSync(publicPath)) fs.mkdirSync(publicPath);
         fs.writeFileSync(path.join(publicPath, 'data_klasemen.json'), JSON.stringify(top50, null, 2));
 
-        const linkWeb = "https://093c-180-241-240-20.ngrok-free.app/klasemen.html";
+        const linkWeb = `${NGROK_URL}/klasemen.html`;
 
         let teks = `🏆 *NEXUS LEADERBOARD DIUPDATE!* 🏆\n\n`;
         teks += `Sistem telah menghitung ulang total kekayaan dan kualitas peliharaan seluruh pemain.\n\n`;

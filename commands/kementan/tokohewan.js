@@ -1,3 +1,5 @@
+const { NGROK_URL } = require('../../config');
+
 module.exports = {
     name: 'tokohewan',
     description: 'Membuka katalog hewan peliharaan via Web',
@@ -5,8 +7,7 @@ module.exports = {
     async execute(sock, msg, args) {
         const chatId = msg.key.remoteJid;
         
-        // Ganti URL di bawah dengan alamat domain/IP web server milikmu
-        const linkWebToko = "https://093c-180-241-240-20.ngrok-free.app/tokohewan.html";
+        const linkWebToko = `${NGROK_URL}/tokohewan.html`;
 
         let teksToko = `🏪 *NEXUS PET SHOP* 🏪\n\n`;
         teksToko += `Kami telah memindahkan toko kami ke dalam aplikasi web agar lebih nyaman!\n\n`;

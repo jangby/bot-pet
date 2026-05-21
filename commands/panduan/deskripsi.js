@@ -1,3 +1,5 @@
+const { NGROK_URL } = require('../../config');
+
 module.exports = {
     name: 'deskripsi',
     description: 'Menampilkan link panduan lengkap bermain bot',
@@ -5,8 +7,7 @@ module.exports = {
     async execute(sock, msg, args) {
         const chatId = msg.key.remoteJid;
         
-        // Sesuaikan domain ini dengan domain atau IP hosting kamu
-        const linkPanduan = 'https://093c-180-241-240-20.ngrok-free.app/panduan'; 
+        const linkPanduan = `${NGROK_URL}/panduan`; 
 
         const teksPanduan = 
 `📖 *PANDUAN LENGKAP NEXUS PET* 📖

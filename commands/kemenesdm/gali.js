@@ -48,24 +48,50 @@ module.exports = {
         petTarget.lastFeed = Date.now();
         fs.writeFileSync(path.join(process.cwd(), 'data/pet.json'), JSON.stringify(global.db.pet, null, 2));
 
+        // --- Helper resolve LID ke JID asli ---
+        const resolveJid = async () => {
+            let participants = [];
+            if (chatId.endsWith('@g.us')) {
+                try {
+                    const meta = await sock.groupMetadata(chatId);
+                    participants = meta.participants;
+                } catch(e) {}
+            }
+            return (nomor) => {
+                if (participants.length > 0) {
+                    const part = participants.find(p =>
+                        (p.id && p.id.includes(nomor)) || (p.lid && p.lid.includes(nomor))
+                    );
+                    if (part && part.id.endsWith('@s.whatsapp.net')) return { jid: part.id, num: part.id.split('@')[0] };
+                }
+                return { jid: `${nomor}@s.whatsapp.net`, num: nomor };
+            };
+        };
+
         if (lobi.peserta.length < 3) {
-            const tagSender = senderNumber.length > 14 ? `${senderNumber}@lid` : `${senderNumber}@s.whatsapp.net`;
-            return await sock.sendMessage(chatId, { text: `✅ @${senderNumber} bergabung ke ekspedisi!\n\n⚠️ Butuh *1 orang* lagi untuk mulai menggali.`, mentions: [tagSender] });
+            // Belum penuh — konfirmasi bergabung
+            const getJid = await resolveJid();
+            const rs = getJid(senderNumber);
+            return await sock.sendMessage(chatId, {
+                text: `✅ @${rs.num} bergabung ke ekspedisi!\n\n⚠️ Butuh *${3 - lobi.peserta.length} orang* lagi untuk mulai menggali.`,
+                mentions: [rs.jid]
+            });
         } else {
             // LOBI PENUH! EKSEKUSI GACHA GRUP
             const peserta = [...lobi.peserta];
             delete global.db.tambangGrup[chatId];
 
+            const getJid = await resolveJid();
+
             let teksHasil = `🎉 *EKSPEDISI BERHASIL!* 🎉\n\nTim yang beranggotakan 3 orang telah bekerja sama menggali terowongan kristal!\nSetiap orang mendapatkan harta karun langka:\n\n`;
             let mentions = [];
 
-            // Bagikan hadiah
             peserta.forEach(nomor => {
                 const rng = Math.random() * 100;
                 let barangDapat = 'emas';
                 let namaBarang = 'Emas Murni';
 
-                if (rng < 20) { // 20% dapet Berlian, 80% dapet Emas
+                if (rng < 20) { // 20% Berlian, 80% Emas
                     barangDapat = 'berlian';
                     namaBarang = 'Berlian';
                 }
@@ -73,17 +99,16 @@ module.exports = {
                 if (!global.db.inventory[nomor]) global.db.inventory[nomor] = {};
                 global.db.inventory[nomor][barangDapat] = (global.db.inventory[nomor][barangDapat] || 0) + 1;
                 
-                // Set cooldown grup untuk mereka
+                // Set cooldown grup
                 if (!global.db.cooldownTambang) global.db.cooldownTambang = {};
                 global.db.cooldownTambang[nomor + '_grup'] = Date.now();
 
-                const tagPemain = nomor.length > 14 ? `${nomor}@lid` : `${nomor}@s.whatsapp.net`;
-                teksHasil += `🔸 @${nomor} mendapatkan **1x ${namaBarang}**\n`;
-                mentions.push(tagPemain);
+                const rp = getJid(nomor);
+                teksHasil += `🔸 @${rp.num} mendapatkan 1x ${namaBarang}\n`;
+                mentions.push(rp.jid);
             });
 
             fs.writeFileSync(path.join(process.cwd(), 'data/inventory.json'), JSON.stringify(global.db.inventory, null, 2));
-
             teksHasil += `\n_Harta telah dimasukkan ke dalam tas (!inv) masing-masing._`;
 
             return await sock.sendMessage(chatId, { text: teksHasil, mentions: mentions });

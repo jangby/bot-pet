@@ -13,7 +13,7 @@ let lelangInterval;
 
 // --- 🌐 PENGATURAN GLOBAL & EKONOMI MAKRO 🌐 ---
 global.mataUang = "💠 Nexus";
-global.MAX_SUPPLY = 1000000; 
+global.MAX_SUPPLY = 1000000000; 
 
 global.db = {
     bank: { brankas: global.MAX_SUPPLY, kredit: {} },
@@ -47,6 +47,34 @@ function loadDatabase() {
         fs.writeFileSync('./data/boss.json', JSON.stringify({ aktif: false }, null, 2));
     }
     global.db.boss = JSON.parse(fs.readFileSync('./data/boss.json'));
+
+    if (!fs.existsSync('./data/kabinet.json')) {
+        const kabinetInit = {
+            kas_negara: 0,
+            presiden: "6285188427706",
+            wakil_presiden: "173766357327942",
+            menteri_keuangan: { nomor: "", pajak_pendapatan: 5, bunga_pinjaman: 2 },
+            menteri_perdagangan: { nomor: "", pajak_transaksi: 2 },
+            menteri_esdm: { nomor: "", pajak_tambang: 3 },
+            menteri_pertanian: { nomor: "", pajak_kawin: 5 },
+            menteri_pertahanan: { nomor: "", denda_rampok: 10 }
+        };
+        fs.writeFileSync('./data/kabinet.json', JSON.stringify(kabinetInit, null, 2));
+    }
+    global.db.kabinet = JSON.parse(fs.readFileSync('./data/kabinet.json', 'utf-8'));
+
+    if (!fs.existsSync('./data/nik.json')) {
+        const nikInit = {
+            session: { active: false, groupId: null, groupName: null, startedAt: null, lastReminderAt: null },
+            records: {},
+            pending: []
+        };
+        fs.writeFileSync('./data/nik.json', JSON.stringify(nikInit, null, 2));
+    }
+    global.db.nik = JSON.parse(fs.readFileSync('./data/nik.json', 'utf-8'));
+    if (!global.db.nik.session) global.db.nik.session = { active: false, groupId: null, groupName: null, startedAt: null, lastReminderAt: null };
+    if (!global.db.nik.records) global.db.nik.records = {};
+    if (!global.db.nik.pending) global.db.nik.pending = [];
 
     auditEkonomi(); 
 }
@@ -119,13 +147,41 @@ async function connectToWhatsApp() {
 
     // --- 📂 LOAD COMMANDS ---
     sock.commands = new Map();
-    const folders = ['kemenkeu', 'kementan', 'kemenhan', 'kemendag', 'kemenesdm', 'panduan'];
+
+    // Folder game/ekonomi bawaan + folder fitur baru
+    const folders = [
+        // Folder lama (sistem game & pemerintahan)
+        'kemenkeu', 'kementan', 'kemenhan', 'kemendag', 'kemenesdm', 'panduan', 'presiden',
+        // Folder baru (fitur umum)
+        'utilities', // !stiker, !toimg, !hd, !qr, !ss, !vote, dll
+        'moderasi',  // !tutup, !buka, !kick, !add, !tagall, !antilink
+        'sosial',    // !intro, !absen, !hadir, !jodoh, !confess
+        'ai',        // !ai, !wiki, !cuaca, !gempa, !translate, !rembg, !vn, dll
+        'downloader',// !tt, !ytmp3, !ig, !fb, !pin, !twit
+        'hiburan'    // !quotes, !pantun, !fakta, !joke, !memeindo
+    ];
+
     for (const folder of folders) {
         const folderPath = path.join(__dirname, `commands/${folder}`);
         if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
+
         fs.readdirSync(folderPath).filter(f => f.endsWith('.js')).forEach(file => {
-            const command = require(`./commands/${folder}/${file}`);
-            sock.commands.set(command.name, command);
+            const modul = require(`./commands/${folder}/${file}`);
+
+            // Dukung dua jenis ekspor:
+            // 1. module.exports = { name, execute }  → satu command per file
+            // 2. module.exports = [{ name, execute }, ...]  → banyak command per file
+            const daftarCommand = Array.isArray(modul) ? modul : [modul];
+
+            daftarCommand.forEach(command => {
+                if (!command.name) return; // Lewati jika tidak ada nama
+                sock.commands.set(command.name, command);
+
+                // Daftarkan juga alias jika ada
+                if (command.aliases && Array.isArray(command.aliases)) {
+                    command.aliases.forEach(alias => sock.commands.set(alias, command));
+                }
+            });
         });
     }
 
@@ -137,6 +193,66 @@ async function connectToWhatsApp() {
             if (lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut) connectToWhatsApp();
         } else if (connection === 'open') { console.log('\n✅ Nexus Core Online!'); }
     });
+
+    // --- 👥 EVENT ANGGOTA BARU MASUK (UNTUK PENGUMPULAN NIK) ---
+    sock.ev.on('group-participants.update', async (anu) => {
+        try {
+            if (anu.action === 'add') {
+                const session = global.db.nik?.session;
+                if (session && session.active && session.groupId === anu.id) {
+                    for (const participant of anu.participants) {
+                        const realJid = participant;
+                        const parsedNum = realJid.split('@')[0];
+
+                        if (!global.db.nik.records[parsedNum]) {
+                            if (!global.db.nik.pending.includes(realJid)) {
+                                global.db.nik.pending.push(realJid);
+                            }
+
+                            try {
+                                const templateTeks = `🔔 *PENGUMPULAN NIK REPUBLIK NEXUS* 🔔\n\nHalo! Anda baru saja bergabung di grup *${session.groupName}*.\n\nPresiden/Wapres sedang melakukan pengumpulan NIK guna melengkapi *data MBG Santri*. Mohon segera kirimkan NIK Anda melalui chat pribadi ini dengan format:\n*!nik |Nama Lengkap Sesuai KK| Nomor NIK*\n\nContoh:\n*!nik |Budi Santoso| 1234567890123456*\n\n_Pesan pengingat akan terus dikirim setiap 1 jam jika Anda belum menginputkan NIK._`;
+                                await sock.sendMessage(realJid, { text: templateTeks });
+                            } catch (err) {
+                                console.error(`[NIK NEW MEMBER ERROR] Gagal mengirim PM ke ${realJid}:`, err);
+                            }
+                        }
+                    }
+                    fs.writeFileSync(path.join(process.cwd(), 'data/nik.json'), JSON.stringify(global.db.nik, null, 2));
+                }
+            }
+        } catch (e) {
+            console.error('[ERROR] group-participants.update:', e);
+        }
+    });
+
+    // --- 🕒 SISTEM PENGINGAT NIK OTOMATIS (SETIAP 1 JAM) ---
+    setInterval(async () => {
+        try {
+            if (!global.db.nik || !global.db.nik.session || !global.db.nik.session.active) return;
+            const session = global.db.nik.session;
+            const sekarang = Date.now();
+
+            if (sekarang - (session.lastReminderAt || 0) >= 3600000) {
+                const pendingUsers = global.db.nik.pending || [];
+                if (pendingUsers.length > 0) {
+                    console.log(`[NIK REMINDER] Mengirim pengingat ke ${pendingUsers.length} anggota...`);
+                    for (const userJid of pendingUsers) {
+                        try {
+                            const templateTeks = `🔔 *PENGINGAT PENGUMPULAN NIK* 🔔\n\nHalo! Anda belum menginputkan NIK untuk grup *${session.groupName}* guna melengkapi *data MBG Santri*.\n\nMohon segera kirimkan NIK Anda dengan format:\n*!nik |Nama Lengkap Sesuai KK| Nomor NIK*\n\nContoh:\n*!nik |Budi Santoso| 1234567890123456*\n\n_Pesan ini akan terus dikirim setiap 1 jam jika Anda belum menginputkan NIK._`;
+                            await sock.sendMessage(userJid, { text: templateTeks });
+                            await new Promise(resolve => setTimeout(resolve, 2000));
+                        } catch (err) {
+                            console.error(`[NIK REMINDER ERROR] Gagal mengirim ke ${userJid}:`, err);
+                        }
+                    }
+                }
+                session.lastReminderAt = sekarang;
+                fs.writeFileSync(path.join(process.cwd(), 'data/nik.json'), JSON.stringify(global.db.nik, null, 2));
+            }
+        } catch (e) {
+            console.error("[ERROR] NIK Reminder Interval:", e);
+        }
+    }, 60000);
 
     // --- 📨 PESAN MASUK ---
     sock.ev.on('messages.upsert', async m => {
@@ -150,6 +266,29 @@ async function connectToWhatsApp() {
         // --- ⚔️ LOGIKA "GAS" (DUEL & KAWIN) ---
         if (teksPesan === 'gas' && idPesanDibalas) {
             
+            // 0. COUPLE HANDLER
+            if (global.db.proposalCouple?.[idPesanDibalas]) {
+                const data = global.db.proposalCouple[idPesanDibalas];
+                if (data.target === replierId) {
+                    if (!global.db.player[data.pengaju]) global.db.player[data.pengaju] = { saldo: 0, reputasi: 0 };
+                    if (!global.db.player[data.target]) global.db.player[data.target] = { saldo: 0, reputasi: 0 };
+
+                    global.db.player[data.pengaju].pasangan = data.target;
+                    global.db.player[data.target].pasangan = data.pengaju;
+
+                    delete global.db.proposalCouple[idPesanDibalas];
+                    fs.writeFileSync('./data/player.json', JSON.stringify(global.db.player, null, 2));
+
+                    const tag1 = data.pengaju.length > 14 ? `${data.pengaju}@lid` : `${data.pengaju}@s.whatsapp.net`;
+                    const tag2 = data.target.length > 14 ? `${data.target}@lid` : `${data.target}@s.whatsapp.net`;
+
+                    return await sock.sendMessage(msg.key.remoteJid, { 
+                        text: `🎉 *SAH! PASANGAN BARU!* 🎉\n\nSelamat untuk @${data.pengaju} dan @${data.target} yang kini resmi berpacaran!\nSemoga langgeng dan semangat kerjanya ya! 💕`,
+                        mentions: [tag1, tag2]
+                    });
+                }
+            }
+
             // 1. DUEL HANDLER
             if (global.db.tantanganDuel?.[idPesanDibalas]) {
                 const data = global.db.tantanganDuel[idPesanDibalas];
@@ -244,7 +383,13 @@ async function connectToWhatsApp() {
         if (!fullTeks.startsWith('!')) return;
 
         const args = fullTeks.slice(1).trim().split(/\s+/);
-        const cmd = args.shift().toLowerCase();
+        let cmd = args.shift().toLowerCase();
+        
+        // Fallback untuk salah ketik tanpa spasi (misal !nik| atau !nik[)
+        if (!sock.commands.has(cmd) && cmd.startsWith('nik')) {
+            cmd = 'nik';
+        }
+        
         const senderNumber = (msg.key.participant || msg.key.remoteJid).replace(/:\d+/, '').split('@')[0];
 
         if (!global.db.player[senderNumber]) {
@@ -253,6 +398,15 @@ async function connectToWhatsApp() {
         }
 
         if (sock.commands.has(cmd)) {
+            // --- SISTEM BLOKIR PM (PRIVATE MESSAGE) ---
+            // Hanya !kerja yang tidak bisa dipakai di chat pribadi
+            const { isPrivate } = require('./utils/middleware.js');
+            const pmBlockedCommands = ['kerja'];
+            
+            if (isPrivate(msg) && pmBlockedCommands.includes(cmd)) {
+                return await sock.sendMessage(msg.key.remoteJid, { text: '⚠️ *PERINGATAN*\n\nPerintah `!kerja` hanya bisa digunakan di dalam *Grup*.\n\n_Silakan gunakan perintah ini di grup bersama teman-temanmu!_' }, { quoted: msg });
+            }
+
             // --- SISTEM LOCKDOWN PEMILU ---
             if (global.db.pemilu.status !== 'idle') {
                 const allowed = ['pemilu', 'nyaleg', 'coblos', 'saldo', 'ktp', 'nama'];

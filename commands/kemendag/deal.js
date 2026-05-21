@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { NGROK_URL } = require('../../config');
 
 module.exports = {
     name: 'deal',
@@ -57,7 +58,7 @@ module.exports = {
         fs.writeFileSync(path.join(process.cwd(), 'data/bank.json'), JSON.stringify(global.db.bank, null, 2));
 
         // 5. Generate Link Toko & Pengumuman
-        const linkToko = `https://093c-180-241-240-20.ngrok-free.app/dashboard?token=${lelangTarget.tokenWeb}`;
+        const linkToko = `${NGROK_URL}/dashboard?token=${lelangTarget.tokenWeb}`;
         const teksDeal = `🤝 *AKUISISI TOKO BERHASIL!* 🤝\n\nPenjual telah menyetujui harga! Toko 🏢 *${lelangTarget.nama}* resmi berpindah tangan ke @${pemenang} dengan harga akhir *${hargaAkhir.toLocaleString('id-ID')} 💠*.\n\nPemenang mewarisi seluruh isi etalase toko ini.`;
 
         await sock.sendMessage(chatId, { text: teksDeal, mentions: [`${pemenang}@s.whatsapp.net`] }, { quoted: msg });

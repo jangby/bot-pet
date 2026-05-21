@@ -57,21 +57,31 @@ module.exports = {
         }
 
         // Hitung harga jual (50% dari harga modal)
-        const modalAsli = infoBarang.modal || infoBarang.harga || 50; // Jaga-jaga jika pakai atribut "harga"
+        const modalAsli = infoBarang.modal || infoBarang.harga || 50; 
         const hargaJualSatuan = Math.floor(modalAsli / 2);
-        const totalPendapatan = hargaJualSatuan * jumlahJual;
+        const pendapatanKotor = hargaJualSatuan * jumlahJual;
+
+        // --- SISTEM PAJAK TRANSAKSI (KEMENDAG) ---
+        const persentasePajak = global.db.kabinet?.menteri_perdagangan?.pajak_transaksi || 0;
+        const nilaiPajak = Math.floor(pendapatanKotor * (persentasePajak / 100));
+        const pendapatanBersih = pendapatanKotor - nilaiPajak;
 
         // Eksekusi transaksi
         tas[idBarangDitemukan] -= jumlahJual;
-        global.db.player[senderNumber].saldo += totalPendapatan;
-        global.db.bank.brankas -= totalPendapatan; // Uang ditarik dari bank
+        global.db.player[senderNumber].saldo += pendapatanBersih;
+        global.db.bank.brankas -= pendapatanKotor; // Uang ditarik utuh dari bank
+
+        if (global.db.kabinet) {
+            global.db.kabinet.kas_negara = (global.db.kabinet.kas_negara || 0) + nilaiPajak;
+            fs.writeFileSync(path.join(process.cwd(), 'data/kabinet.json'), JSON.stringify(global.db.kabinet, null, 2));
+        }
 
         // Simpan database
         fs.writeFileSync(path.join(process.cwd(), 'data/inventory.json'), JSON.stringify(global.db.inventory, null, 2));
         fs.writeFileSync(path.join(process.cwd(), 'data/player.json'), JSON.stringify(global.db.player, null, 2));
         fs.writeFileSync(path.join(process.cwd(), 'data/bank.json'), JSON.stringify(global.db.bank, null, 2));
 
-        const teksBerhasil = `✅ *BARANG TERJUAL!*\n\nKamu menjual *${jumlahJual}x ${infoBarang.nama}* ke loak Bank Sentral.\n\n💰 Uang sebesar *${totalPendapatan.toLocaleString('id-ID')} Nexus* telah masuk ke dompetmu!`;
+        const teksBerhasil = `✅ *BARANG TERJUAL!*\n\nKamu menjual *${jumlahJual}x ${infoBarang.nama}* ke loak Bank Sentral.\n\n🏛️ _Potongan Pajak Transaksi (${persentasePajak}%): -${nilaiPajak.toLocaleString('id-ID')} Nexus_\n💰 *Pendapatan Bersih:* ${pendapatanBersih.toLocaleString('id-ID')} Nexus telah masuk ke dompetmu!`;
         
         await sock.sendMessage(chatId, { text: teksBerhasil }, { quoted: msg });
     }

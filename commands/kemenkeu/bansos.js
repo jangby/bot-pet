@@ -64,22 +64,30 @@ module.exports = {
         let daftarPenerimaTeks = '';
         let tagWarga = [];
 
+        // Dapatkan mapping nomor → JID asli dari metadata grup
+        let groupParticipants = [];
+        if (chatId.endsWith('@g.us')) {
+            try {
+                const metaGrup = await sock.groupMetadata(chatId);
+                groupParticipants = metaGrup.participants;
+            } catch(e) {}
+        }
+
+        const resolveJid = (nomor) => {
+            if (groupParticipants.length > 0) {
+                const part = groupParticipants.find(p =>
+                    (p.id && p.id.includes(nomor)) || (p.lid && p.lid.includes(nomor))
+                );
+                if (part && part.id.endsWith('@s.whatsapp.net')) return part.id;
+            }
+            return `${nomor}@s.whatsapp.net`;
+        };
+
         penerimaBansos.forEach(nomor => {
             global.db.player[nomor].saldo += nominalBansos;
-            
-            // 1. Ambil nama dari database agar jelas siapa penerimanya
             const namaPemain = global.db.player[nomor].nama || "Warga Belum Daftar";
-            
-            // 2. Tampilkan Nama dan Nomornya di dalam teks
             daftarPenerimaTeks += `🔸 *${namaPemain}* (@${nomor})\n`;
-            
-            // 3. Perbaikan Format Tag (LID vs Nomor WA Biasa)
-            // Jika digit lebih dari 14, kemungkinan besar itu adalah LID
-            if (nomor.length > 14) {
-                tagWarga.push(`${nomor}@lid`);
-            } else {
-                tagWarga.push(`${nomor}@s.whatsapp.net`);
-            }
+            tagWarga.push(resolveJid(nomor));
         });
 
         // Simpan Database

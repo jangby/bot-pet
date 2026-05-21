@@ -1,0 +1,26 @@
+{
+  "kas_negara": 43522,
+  "presiden": "6285188427706",
+  "wakil_presiden": "173766357327942",
+  "menteri_keuangan": {
+    "nomor": "",
+    "pajak_pendapatan": 5,
+    "bunga_pinjaman": 2
+  },
+  "menteri_perdagangan": {
+    "nomor": "",
+    "pajak_transaksi": 2
+  },
+  "menteri_esdm": {
+    "nomor": "",
+    "pajak_tambang": 3
+  },
+  "menteri_pertanian": {
+    "nomor": "",
+    "pajak_kawin": 5
+  },
+  "menteri_pertahanan": {
+    "nomor": "",
+    "denda_rampok": 10
+  }
+}

@@ -19,18 +19,41 @@ module.exports = {
                 const metadata = await sock.groupMetadata(chatId);
                 const participants = metadata.participants;
                 
-                let belumDaftar = [];
-                let tagSemua = [];
+                let belumDaftar = [];  // { jid: string, nomor: string }
                 
+                // Bangun mapping LID → nomor WA asli
+                // p.id  = nomor WA asli (628xxx@s.whatsapp.net) ATAU LID (xxx@lid)
+                // p.lid = LID pendek (jika tersedia)
+                // Kunci di global.db.player bisa berupa nomor asli atau LID pendek
                 participants.forEach(p => {
-                    const nomor = p.id.split('@')[0];
                     const botNumber = sock.user.id.split(':')[0];
-                    
-                    if (nomor !== botNumber) {
-                        if (!global.db.player[nomor] || !global.db.player[nomor].nama) {
-                            belumDaftar.push(nomor); // Simpan nomor yang belum daftar
-                            tagSemua.push(p.id);     // Simpan ID lengkap untuk mentions array
-                        }
+
+                    // Tentukan JID yang benar untuk mention (harus @s.whatsapp.net)
+                    // Kalau p.id sudah @s.whatsapp.net → pakai langsung
+                    // Kalau p.id masih @lid → coba cari dari participant lain yang cocok (fallback ke p.id)
+                    let realJid = p.id;
+                    if (p.id.endsWith('@lid')) {
+                        // Cari participant lain yang lid-nya sama dengan p.id ini
+                        const match = participants.find(q =>
+                            q.id && q.id.endsWith('@s.whatsapp.net') &&
+                            q.lid && q.lid === p.id
+                        );
+                        if (match) realJid = match.id;
+                    }
+
+                    const nomorBersih = realJid.split('@')[0]; // Nomor tanpa @...
+
+                    if (nomorBersih === botNumber) return;
+
+                    // Cek apakah sudah daftar —
+                    // key di db bisa berupa nomor asli ATAU LID pendek
+                    const lidPendek = p.lid ? p.lid.split('@')[0] : null;
+                    const sudahDaftar =
+                        (global.db.player[nomorBersih] && global.db.player[nomorBersih].nama) ||
+                        (lidPendek && global.db.player[lidPendek] && global.db.player[lidPendek].nama);
+
+                    if (!sudahDaftar) {
+                        belumDaftar.push({ jid: realJid, nomor: nomorBersih });
                     }
                 });
 
@@ -48,13 +71,13 @@ module.exports = {
                 teks += `Contoh: \`!nama Budi Santoso\`\n\n`;
                 teks += `_Mohon kerjasamanya semuanya! Pesan ini akan terus muncul mengganggu tiap 5 menit jika masih ada yang belum mendaftar._\n\n`;
                 
-                // ✨ FIX TAG ALL: Kita tulis @nomor nya di dalam teks agar warnanya biru/hijau ✨
                 teks += `MOHON PERHATIAN:\n`;
-                belumDaftar.forEach(n => {
-                    teks += `@${n} `;
+                belumDaftar.forEach(({ nomor }) => {
+                    teks += `@${nomor} `;
                 });
 
-                await sock.sendMessage(chatId, { text: teks, mentions: tagSemua });
+                const mentionsJid = belumDaftar.map(({ jid }) => jid);
+                await sock.sendMessage(chatId, { text: teks, mentions: mentionsJid });
 
             } catch (err) {
                 console.error("Gagal mengirim pengingat:", err);

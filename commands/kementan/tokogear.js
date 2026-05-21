@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { NGROK_URL } = require('../../config');
 
 // Daftar perlengkapan yang tersedia (Database Baru 12 Item)
 const katalogGear = {
@@ -31,7 +32,7 @@ module.exports = {
 
         // 1. Tampilkan Link Web jika tidak ada argumen "beli"
         if (args.length === 0 || args[0] !== 'beli') {
-            const linkWebBlacksmith = "https://093c-180-241-240-20.ngrok-free.app/tokogear.html";
+            const linkWebBlacksmith = `${NGROK_URL}/tokogear.html`;
             
             let teksToko = `⚒️ *BLACKSMITH / TOKO GEAR* ⚒️\n\n`;
             teksToko += `Toko perlengkapan kini pindah ke antarmuka Web agar lebih mudah memilih senjata dan zirah.\n\n`;

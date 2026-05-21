@@ -68,19 +68,44 @@ module.exports = {
             return await sock.sendMessage(chatId, { text: '⚖️ *BALAI LELANG*\nSaat ini tidak ada lisensi toko yang sedang dilelang. Ekonomi sedang sehat!' }, { quoted: msg });
         }
 
-        let teksLelang = `⚖️ *BALAI LELANG LISENSI TOKO* ⚖️\n_Toko-toko di bawah ini disita oleh Bank Sentral dan siap dipindahtangankan beserta seluruh aset di dalamnya._\n\n`;
+        // Resolve nomor pemilik lama ke JID asli (anti-LID)
+        let groupParticipants = [];
+        if (chatId.endsWith('@g.us')) {
+            try {
+                const metaGrup = await sock.groupMetadata(chatId);
+                groupParticipants = metaGrup.participants;
+            } catch(e) {}
+        }
 
+        const resolveJid = (nomor) => {
+            if (nomor === 'BANK_SENTRAL') return null;
+            if (groupParticipants.length > 0) {
+                const part = groupParticipants.find(p =>
+                    (p.id && p.id.includes(nomor)) || (p.lid && p.lid.includes(nomor))
+                );
+                if (part && part.id.endsWith('@s.whatsapp.net')) return { jid: part.id, num: part.id.split('@')[0] };
+            }
+            return { jid: `${nomor}@s.whatsapp.net`, num: nomor };
+        };
+
+        const mentionsLelang = [];
         daftarLelang.forEach(([idLama, dataLelang], index) => {
-            const penawar = dataLelang.pemenangSementara ? `@${dataLelang.pemenangSementara}` : 'Belum Ada';
-            teksLelang += `🏢 *${dataLelang.nama}* (Pemilik Lama: @${idLama})\n`;
+            const rPemilik = resolveJid(idLama);
+            const rPenawar = dataLelang.pemenangSementara ? resolveJid(dataLelang.pemenangSementara) : null;
+            const penawarTeks = rPenawar ? `@${rPenawar.num}` : 'Belum Ada';
+
+            teksLelang += `🏢 *${dataLelang.nama}* (Pemilik Lama: @${rPemilik ? rPemilik.num : idLama})\n`;
             teksLelang += `🏷️ Kategori: ${dataLelang.kategori.toUpperCase()}\n`;
-            teksLelang += `💰 Harga Buka: *${dataLelang.hargaBuka.toLocaleString('id-ID')} 💠*\n`;
-            teksLelang += `🔥 Tawaran Tertinggi: *${dataLelang.bidTertinggi.toLocaleString('id-ID')} 💠* (${penawar})\n`;
+            teksLelang += `💰 Harga Buka: *${dataLelang.hargaBuka.toLocaleString('id-ID')} 💪*\n`;
+            teksLelang += `🔥 Tawaran Tertinggi: *${dataLelang.bidTertinggi.toLocaleString('id-ID')} 💪* (${penawarTeks})\n`;
             teksLelang += `------------------------------\n`;
+
+            if (rPemilik) mentionsLelang.push(rPemilik.jid);
+            if (rPenawar) mentionsLelang.push(rPenawar.jid);
         });
 
         teksLelang += `\n💡 _Ketik !bid @PemilikLama [nominal] untuk menawar toko tersebut._`;
 
-        await sock.sendMessage(chatId, { text: teksLelang, mentions: daftarLelang.map(d => `${d[0]}@s.whatsapp.net`) }, { quoted: msg });
+        await sock.sendMessage(chatId, { text: teksLelang, mentions: mentionsLelang }, { quoted: msg });
     }
 };

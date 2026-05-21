@@ -18,7 +18,7 @@ module.exports = {
         const nama = player.nama;
         const saldo = player.saldo || 0;
         const reputasi = player.reputasi || 0;
-        const pasangan = player.pasangan ? `@${player.pasangan}` : 'Belum Kawin';
+        const pasangan = player.pasangan ? `Menikah dengan @${player.pasangan}` : 'Belum Kawin';
         const statusWarga = player.pekerjaan || 'Buruh Lepas';
 
         // Hitung jumlah peliharaan
@@ -37,7 +37,10 @@ module.exports = {
 
         // Siapkan tag (mention) jika ada pasangan
         let mentions = [senderId];
-        if (player.pasangan) mentions.push(`${player.pasangan}@s.whatsapp.net`);
+        if (player.pasangan) {
+            const tagPasangan = player.pasangan.length > 14 ? `${player.pasangan}@lid` : `${player.pasangan}@s.whatsapp.net`;
+            mentions.push(tagPasangan);
+        }
 
         await sock.sendMessage(chatId, { text: teksKTP, mentions: mentions }, { quoted: msg });
     }

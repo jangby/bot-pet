@@ -13,6 +13,20 @@
       "kondisi": "Sakit (Luka Fisik)",
       "power": 32,
       "lastFeed": 1778813528891
+    },
+    {
+      "id": 2,
+      "nama": "Alien Misterius",
+      "spesies": "Alien Misterius 👽",
+      "diet": "Omnivora",
+      "rarity": "SECRET",
+      "level": 17,
+      "xp": 838,
+      "health": 100,
+      "lapar": 30,
+      "kondisi": "Sehat",
+      "power": 380,
+      "lastFeed": 1779160650949
     }
   ],
   "168032676651233": [
@@ -29,6 +43,411 @@
       "kondisi": "Sehat",
       "power": 6,
       "lastFeed": 1778772314792
+    }
+  ],
+  "185925007056938": [
+    {
+      "id": 1,
+      "nama": "👙LAMI👙",
+      "spesies": "Gajah Perang 🐘",
+      "diet": "Herbivora",
+      "rarity": "Epic",
+      "level": 3,
+      "xp": 157,
+      "health": 100,
+      "lapar": 80,
+      "kondisi": "Sehat",
+      "power": 60,
+      "lastFeed": 1779185661698
+    },
+    {
+      "id": 2,
+      "nama": "🍑Vamela🍑",
+      "spesies": "Alien Misterius 👽",
+      "diet": "Omnivora",
+      "rarity": "SECRET",
+      "level": 33,
+      "xp": 188,
+      "health": 6100,
+      "lapar": 20,
+      "kondisi": "Sehat",
+      "power": 1970,
+      "lastFeed": 1779285893580,
+      "buff": 200,
+      "gear": {
+        "senjata": "sabit_kematian",
+        "armor": "aura_dewa"
+      }
+    },
+    {
+      "id": 3,
+      "nama": "🌹MEKAR🌹",
+      "spesies": "Alien Misterius 👽",
+      "diet": "Omnivora",
+      "rarity": "SECRET",
+      "level": 11,
+      "xp": 283,
+      "health": 100,
+      "lapar": 20,
+      "kondisi": "Sehat",
+      "power": 310,
+      "lastFeed": 1779203449633,
+      "buff": 500
+    }
+  ],
+  "229064145170580": [
+    {
+      "id": 1,
+      "nama": "🌊VEVEK TSUNAMI🌊",
+      "spesies": "Alien Misterius 👽",
+      "diet": "Omnivora",
+      "rarity": "SECRET",
+      "level": 21,
+      "xp": 1133,
+      "health": 100,
+      "lapar": 15,
+      "kondisi": "Sehat",
+      "power": 420,
+      "lastFeed": 1779290733758,
+      "buff": 200
+    },
+    {
+      "id": 2,
+      "nama": "T-Rex",
+      "spesies": "T-Rex 🦖",
+      "diet": "Karnivora",
+      "rarity": "SECRET",
+      "level": 1,
+      "xp": 55,
+      "health": 100,
+      "lapar": 20,
+      "kondisi": "Sehat",
+      "power": 200,
+      "lastFeed": 1779111403271
+    },
+    {
+      "id": 3,
+      "nama": "Brontosaurus",
+      "spesies": "Brontosaurus 🦕",
+      "diet": "Herbivora",
+      "rarity": "SECRET",
+      "level": 1,
+      "xp": 19,
+      "health": 100,
+      "lapar": 60,
+      "kondisi": "Sakit (Luka Fisik)",
+      "power": 180,
+      "lastFeed": 1779111399053
+    }
+  ],
+  "178392120950960": [
+    {
+      "id": 1,
+      "nama": "👁️‍🗨️Sebastian🧭",
+      "spesies": "Alien Misterius 👽",
+      "diet": "Omnivora",
+      "rarity": "SECRET",
+      "level": 25,
+      "xp": 986,
+      "health": 6100,
+      "lapar": 10,
+      "kondisi": "Sakit (Luka Fisik)",
+      "power": 1960,
+      "lastFeed": 1779195103569,
+      "buff": 500,
+      "gear": {
+        "senjata": "sabit_kematian",
+        "armor": "aura_dewa"
+      }
+    }
+  ],
+  "107774335779006": [
+    {
+      "id": 1,
+      "nama": "Phoenix",
+      "spesies": "Phoenix 🐦‍🔥",
+      "diet": "Omnivora",
+      "rarity": "Legendary",
+      "level": 1,
+      "xp": 67,
+      "health": 100,
+      "lapar": 0,
+      "kondisi": "Sakit (Luka Fisik)",
+      "power": 110,
+      "lastFeed": 1778904938331,
+      "buff": 0
+    },
+    {
+      "id": 2,
+      "nama": "pembokep",
+      "spesies": "Alien Misterius 👽",
+      "diet": "Omnivora",
+      "rarity": "SECRET",
+      "level": 21,
+      "xp": 290,
+      "health": 6100,
+      "lapar": 45,
+      "kondisi": "Sakit (Luka Fisik)",
+      "power": 1910,
+      "lastFeed": 1779119071116,
+      "buff": 200,
+      "gear": {
+        "senjata": "sabit_kematian",
+        "armor": "aura_dewa"
+      }
+    },
+    {
+      "id": 3,
+      "nama": "Alien Misterius",
+      "spesies": "Alien Misterius 👽",
+      "diet": "Omnivora",
+      "rarity": "SECRET",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 100,
+      "kondisi": "Sehat",
+      "power": 220,
+      "lastFeed": 1779014573547
+    },
+    {
+      "id": 4,
+      "nama": "Alien Misterius",
+      "spesies": "Alien Misterius 👽",
+      "diet": "Omnivora",
+      "rarity": "SECRET",
+      "level": 1,
+      "xp": 29,
+      "health": 100,
+      "lapar": 30,
+      "kondisi": "Sehat",
+      "power": 220,
+      "lastFeed": 1779117789764
+    }
+  ],
+  "64592063512630": [
+    {
+      "id": 1,
+      "nama": "Burung Suci",
+      "spesies": "Phoenix 🐦‍🔥",
+      "diet": "Omnivora",
+      "rarity": "Legendary",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 100,
+      "kondisi": "Sehat",
+      "power": 110,
+      "lastFeed": 1779317819476
+    }
+  ],
+  "29833430089855": [
+    {
+      "id": 1,
+      "nama": "🫦 CUPI CUPITAH AH🫦",
+      "spesies": "Alien Misterius 👽",
+      "diet": "Omnivora",
+      "rarity": "SECRET",
+      "level": 14,
+      "xp": 1316,
+      "health": 6100,
+      "lapar": 100,
+      "kondisi": "Sehat",
+      "power": 1840,
+      "lastFeed": 1779322342929,
+      "gear": {
+        "senjata": "sabit_kematian",
+        "armor": "aura_dewa"
+      },
+      "buff": 0
+    }
+  ],
+  "21556944220222": [
+    {
+      "id": 1,
+      "nama": "Pengocok",
+      "spesies": "Kucing Liar 🐱",
+      "diet": "Karnivora",
+      "rarity": "Common",
+      "level": 2,
+      "xp": 148,
+      "health": 100,
+      "lapar": 60,
+      "kondisi": "Sehat",
+      "power": 15,
+      "lastFeed": 1779078847876,
+      "buff": 200
+    },
+    {
+      "id": 2,
+      "nama": "Hino",
+      "spesies": "Alien Misterius 👽",
+      "diet": "Omnivora",
+      "rarity": "SECRET",
+      "level": 6,
+      "xp": 283,
+      "health": 6100,
+      "lapar": 45,
+      "kondisi": "Sehat",
+      "power": 1770,
+      "lastFeed": 1779063671195,
+      "gear": {
+        "senjata": "sabit_kematian",
+        "armor": "aura_dewa"
+      }
+    }
+  ],
+  "231250417713221": [
+    {
+      "id": 1,
+      "nama": "Kucing Liar",
+      "spesies": "Kucing Liar 🐱",
+      "diet": "Karnivora",
+      "rarity": "Common",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 100,
+      "kondisi": "Sehat",
+      "power": 5,
+      "lastFeed": 1778935985553
+    },
+    {
+      "id": 2,
+      "nama": "Alien Misterius",
+      "spesies": "Alien Misterius 👽",
+      "diet": "Omnivora",
+      "rarity": "SECRET",
+      "level": 1,
+      "xp": 0,
+      "health": 100,
+      "lapar": 50,
+      "kondisi": "Sehat",
+      "power": 220,
+      "lastFeed": 1779016843330,
+      "buff": 0
+    }
+  ],
+  "149740545151215": [
+    {
+      "id": 1,
+      "nama": "kucing galak",
+      "spesies": "Kucing Liar 🐱",
+      "diet": "Karnivora",
+      "rarity": "Common",
+      "level": 1,
+      "xp": 55,
+      "health": 100,
+      "lapar": 45,
+      "kondisi": "Sehat",
+      "power": 5,
+      "lastFeed": 1778938777915
+    }
+  ],
+  "75038078300307": [
+    {
+      "id": 1,
+      "nama": "asep",
+      "spesies": "Alien Misterius 👽",
+      "diet": "Omnivora",
+      "rarity": "SECRET",
+      "level": 31,
+      "xp": 955,
+      "health": 6100,
+      "lapar": 100,
+      "kondisi": "Sehat",
+      "power": 2020,
+      "lastFeed": 1779285677007,
+      "buff": 0,
+      "gear": {
+        "senjata": "sabit_kematian",
+        "armor": "aura_dewa"
+      }
+    }
+  ],
+  "111416384184361": [],
+  "256886758719623": [
+    {
+      "id": 1,
+      "nama": "🤴🏻prince Arva🤴🏻",
+      "spesies": "Alien Misterius 👽",
+      "diet": "Omnivora",
+      "rarity": "SECRET",
+      "level": 7,
+      "xp": 246,
+      "health": 300,
+      "lapar": 60,
+      "kondisi": "Sakit (Luka Fisik)",
+      "power": 280,
+      "lastFeed": 1779197744139,
+      "gear": {
+        "senjata": null,
+        "armor": "kalung_darah"
+      }
+    }
+  ],
+  "174921602854973": [
+    {
+      "id": 1,
+      "nama": "Kelinci Gesit",
+      "spesies": "Kelinci Gesit 🐇",
+      "diet": "Herbivora",
+      "rarity": "Common",
+      "level": 2,
+      "xp": 64,
+      "health": 100,
+      "lapar": 20,
+      "kondisi": "Sehat",
+      "power": 19,
+      "lastFeed": 1779161012877
+    }
+  ],
+  "209173564367025": [
+    {
+      "id": 1,
+      "nama": "Laba-laba Berbisa",
+      "spesies": "Laba-laba 🕷️",
+      "diet": "Karnivora",
+      "rarity": "Epic",
+      "level": 6,
+      "xp": 83,
+      "health": 100,
+      "lapar": 20,
+      "kondisi": "Sehat",
+      "power": 84,
+      "lastFeed": 1779322464992
+    }
+  ],
+  "1435089526784": [
+    {
+      "id": 1,
+      "nama": "Alien Misterius",
+      "spesies": "Alien Misterius 👽",
+      "diet": "Omnivora",
+      "rarity": "SECRET",
+      "level": 2,
+      "xp": 81,
+      "health": 100,
+      "lapar": 100,
+      "kondisi": "Sehat",
+      "power": 230,
+      "lastFeed": 1779099204891
+    }
+  ],
+  "137671385039053": [
+    {
+      "id": 1,
+      "nama": "william",
+      "spesies": "Unicorn 🦄",
+      "diet": "Herbivora",
+      "rarity": "Mythic",
+      "level": 3,
+      "xp": 121,
+      "health": 100,
+      "lapar": 35,
+      "kondisi": "Sehat",
+      "power": 110,
+      "lastFeed": 1779322395277
     }
   ]
 }

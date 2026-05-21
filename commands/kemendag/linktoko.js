@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { NGROK_URL } = require('../../config');
 
 module.exports = {
     name: 'linktoko',
@@ -17,7 +18,7 @@ module.exports = {
 
         const dataToko = global.db.market.tokoPemain[senderNumber];
         const token = dataToko.tokenWeb;
-        const linkDashboard = `https://093c-180-241-240-20.ngrok-free.app/dashboard?token=${token}`;
+        const linkDashboard = `${NGROK_URL}/dashboard?token=${token}`;
 
         const teksLink = `🏪 *AKSES DASHBOARD TOKO* 🏪\n\nNama Toko: *${dataToko.nama}*\n\nKlik link di bawah ini untuk mengelola stok barang, mengubah harga jual, dan berbelanja ke Pasar Induk:\n\n🔐 ${linkDashboard}\n\n_⚠️ JANGAN BAGIKAN LINK INI KEPADA SIAPAPUN! Siapapun yang memiliki link ini bisa mengubah harga dan menguras isi kas tokomu._`;
 

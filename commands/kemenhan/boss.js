@@ -11,20 +11,19 @@ module.exports = {
         // Inisialisasi database boss jika belum ada
         if (!global.db.boss) global.db.boss = { aktif: false };
 
-        // --- COMMAND: !boss spawn (Bisa Dibatasi Untuk Admin) ---
+        // --- COMMAND: !boss spawn ---
         if (args[0] === 'spawn') {
             if (global.db.boss.aktif) {
                 return await sock.sendMessage(chatId, { text: '⚠️ Boss masih hidup dan sedang meneror grup!' }, { quoted: msg });
             }
 
-            // Atur statistik boss di sini
             global.db.boss = {
                 aktif: true,
                 nama: "🐲 Leviathan Korupsi (Raja Iblis)",
-                hp: 150000, // 150.000 HP
+                hp: 150000,
                 maxHp: 150000,
-                peserta: {}, // Menyimpan rekam jejak damage pemain
-                cooldown: {}, // Menyimpan waktu terakhir pemain menyerang
+                peserta: {},
+                cooldown: {},
                 waktuMulai: Date.now()
             };
             
@@ -51,10 +50,9 @@ Ketik \`!serangboss\` untuk menyumbang damage! Hancurkan sebelum dia merusak eko
         let teksInfo = `👹 *INFO BOSS RAID* 👹\n\n`;
         teksInfo += `• Nama: *${b.nama}*\n`;
         teksInfo += `• HP Tersisa: *${b.hp.toLocaleString('id-ID')} / ${b.maxHp.toLocaleString('id-ID')}* ❤️\n\n`;
-        
         teksInfo += `🏆 *TOP 5 ATTACKER SEMENTARA:*\n`;
         
-        // Mengurutkan peserta berdasarkan damage tertinggi
+        // Urutkan peserta berdasarkan damage tertinggi
         const daftarPeserta = Object.entries(b.peserta).sort((a, b) => b[1].damage - a[1].damage).slice(0, 5);
         
         if (daftarPeserta.length === 0) {
@@ -66,8 +64,33 @@ Ketik \`!serangboss\` untuk menyumbang damage! Hancurkan sebelum dia merusak eko
         }
 
         teksInfo += `\nKetik \`!serangboss\` untuk ikut berpartisipasi!`;
-        
-        const mentions = daftarPeserta.map(p => `${p[0]}@s.whatsapp.net`);
+
+        // Resolve LID ke nomor asli untuk tampilan dan mention
+        let groupParticipants = [];
+        if (chatId.endsWith('@g.us')) {
+            try {
+                const metaGrup = await sock.groupMetadata(chatId);
+                groupParticipants = metaGrup.participants;
+            } catch(e) {}
+        }
+
+        const resolveJid = (nomor) => {
+            if (groupParticipants.length > 0) {
+                const part = groupParticipants.find(p =>
+                    (p.id && p.id.includes(nomor)) || (p.lid && p.lid.includes(nomor))
+                );
+                if (part && part.id.endsWith('@s.whatsapp.net')) return { jid: part.id, num: part.id.split('@')[0] };
+            }
+            return { jid: `${nomor}@s.whatsapp.net`, num: nomor };
+        };
+
+        // Ganti teks @nomor dengan nomor yang sudah di-resolve
+        daftarPeserta.forEach(([nomor]) => {
+            const r = resolveJid(nomor);
+            teksInfo = teksInfo.replace(`@${nomor}`, `@${r.num}`);
+        });
+
+        const mentions = daftarPeserta.map(p => resolveJid(p[0]).jid);
         await sock.sendMessage(chatId, { text: teksInfo, mentions: mentions }, { quoted: msg });
     }
 };

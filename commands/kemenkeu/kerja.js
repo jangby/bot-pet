@@ -38,20 +38,46 @@ module.exports = {
                         return await sock.sendMessage(chatId, { text: `🚨 *KRISIS MONETER NEGARA!*\n\nJawabanmu benar, TAPI Kas Bank Sentral saat ini KOSONG!\nPemerintah tidak bisa memberikan gaji karena semua uang Nexus sedang ditimbun oleh para pemain.\n\n_Pancing uang agar kembali ke Bank dengan cara transaksi toko (!beli) agar kena pajak, atau jual barang ke Bank (!jualitem)._` }, { quoted: msg });
                     }
 
+                    // --- SISTEM PAJAK PENDAPATAN (KEMENKEU) ---
+                    const persentasePajak = global.db.kabinet?.menteri_keuangan?.pajak_pendapatan || 0;
+                    const nilaiPajak = Math.floor(gaji * (persentasePajak / 100));
+                    const gajiBersih = gaji - nilaiPajak;
+
                     if (global.db.player[senderNumber].pasangan) {
                         gaji += 50; 
-                        teksBonus = '\n💖 _(Bonus Semangat dari Pasangan: +50 🪙)_';
+                        teksBonus = '\n💖 _(Bonus Semangat dari Pasangan: +50 💠)_';
                     }
 
-                    global.db.player[senderNumber].saldo = (parseInt(global.db.player[senderNumber].saldo) || 0) + gaji;
+                    let reputasiTambahan = 1;
+                    if (sesi.level === 'sedang') reputasiTambahan = 2;
+                    else if (sesi.level === 'sulit') reputasiTambahan = 3;
+
+                    global.db.player[senderNumber].saldo = (parseInt(global.db.player[senderNumber].saldo) || 0) + gajiBersih;
+                    global.db.player[senderNumber].reputasi = (parseInt(global.db.player[senderNumber].reputasi) || 0) + reputasiTambahan;
+                    
                     global.db.bank.brankas -= gaji; // Kas bank dikurangi
                     
-                    delete global.db.sesiKerja[senderNumber];
+                    if (global.db.kabinet) {
+                        global.db.kabinet.kas_negara = (global.db.kabinet.kas_negara || 0) + nilaiPajak;
+                        fs.writeFileSync(path.join(process.cwd(), 'data/kabinet.json'), JSON.stringify(global.db.kabinet, null, 2));
+                    }
                     
+                    delete global.db.sesiKerja[senderNumber];
+
+                    // --- UPDATE KUOTA KERJA ---
+                    if (!player.kuotaKerja) player.kuotaKerja = {};
+                    const _sekarang = Date.now();
+                    const _KUOTA_DURASI = 15 * 60 * 1000;
+                    if (!player.kuotaKerja[sesi.level] || _sekarang >= player.kuotaKerja[sesi.level].resetAt) {
+                        player.kuotaKerja[sesi.level] = { jumlah: 1, resetAt: _sekarang + _KUOTA_DURASI };
+                    } else {
+                        player.kuotaKerja[sesi.level].jumlah += 1;
+                    }
+
                     fs.writeFileSync(path.join(process.cwd(), 'data/player.json'), JSON.stringify(global.db.player, null, 2));
                     fs.writeFileSync(path.join(process.cwd(), 'data/bank.json'), JSON.stringify(global.db.bank, null, 2));
                     
-                    return await sock.sendMessage(chatId, { text: `✅ *KERJA KERAS TERBAYAR!*\n\nJawabanmu benar! Negara memberimu upah sebesar *${gaji} Nexus*.${teksBonus}\n\n_Kamu bisa melamar kerja lagi setelah istirahat 1 menit._` }, { quoted: msg });
+                    return await sock.sendMessage(chatId, { text: `✅ *KERJA KERAS TERBAYAR!*\n\nJawabanmu benar! Negara memberimu upah sebesar *${gaji} Nexus*.${teksBonus}\n🌟 _Reputasi meningkat +${reputasiTambahan}_\n\n🏛️ _Potongan Pajak PPh (${persentasePajak}%): -${nilaiPajak} Nexus_\n💰 *Gaji Bersih Diterima:* ${gajiBersih} Nexus\n\n_Kamu bisa melamar kerja lagi setelah istirahat 1 menit._` }, { quoted: msg });
                 } else {
                     delete global.db.sesiKerja[senderNumber];
                     fs.writeFileSync(path.join(process.cwd(), 'data/player.json'), JSON.stringify(global.db.player, null, 2));
@@ -75,8 +101,62 @@ module.exports = {
         const validLevels = ['mudah', 'sedang', 'sulit'];
         const userLevel = args.length > 0 ? args[0].toLowerCase() : null;
 
+        // --- CEK & TAMPILKAN KUOTA JIKA TIDAK ADA ARGUMEN ---
+        const KUOTA_MAX = 5;
+        const KUOTA_DURASI = 15 * 60 * 1000; // 15 menit dalam ms
+        const sekarang = Date.now();
+
+        if (!player.kuotaKerja) player.kuotaKerja = {};
+
+        // Reset kuota level yang sudah lewat 15 menit
+        for (const lvl of validLevels) {
+            if (player.kuotaKerja[lvl] && sekarang >= player.kuotaKerja[lvl].resetAt) {
+                delete player.kuotaKerja[lvl];
+            }
+        }
+
+        // Helper: info sisa kuota per level
+        const infoKuota = () => {
+            const emoji = { mudah: '🟢', sedang: '🟡', sulit: '🔴' };
+            const gaji  = { mudah: '30-80', sedang: '80-180', sulit: '180-350' };
+            return validLevels.map(lvl => {
+                const k = player.kuotaKerja[lvl];
+                const sisa = k ? Math.max(0, KUOTA_MAX - k.jumlah) : KUOTA_MAX;
+                const sisaResetMenit = k ? Math.ceil((k.resetAt - sekarang) / 60000) : 0;
+                const resetInfo = sisa === 0 ? ` _(reset ~${sisaResetMenit} mnt)_` : '';
+                return `${emoji[lvl]} \`!kerja ${lvl}\` (Gaji: ${gaji[lvl]}) — Kuota: *${sisa}/${KUOTA_MAX}*${resetInfo}`;
+            }).join('\n');
+        };
+
         if (!userLevel || !validLevels.includes(userLevel)) {
-            return await sock.sendMessage(chatId, { text: '🏢 *KEMENTERIAN TENAGA KERJA*\n\nSilakan pilih tingkat kesulitan pekerjaan yang kamu inginkan:\n\n🟢 `!kerja mudah` (Gaji: 30-80)\n🟡 `!kerja sedang` (Gaji: 80-180)\n🔴 `!kerja sulit` (Gaji: 180-350)' }, { quoted: msg });
+            return await sock.sendMessage(chatId, {
+                text: `🏢 *KEMENTERIAN TENAGA KERJA*\n\nSilakan pilih tingkat kesulitan pekerjaan:\n\n${infoKuota()}\n\n_⏱ Kuota reset setiap 15 menit._`
+            }, { quoted: msg });
+        }
+
+        // --- CEK KUOTA LEVEL YANG DIPILIH ---
+        const kuotaLevel = player.kuotaKerja[userLevel];
+        if (kuotaLevel && kuotaLevel.jumlah >= KUOTA_MAX) {
+            const sisaResetMenit = Math.ceil((kuotaLevel.resetAt - sekarang) / 60000);
+            const levelLabel = { mudah: '🟢 Mudah', sedang: '🟡 Sedang', sulit: '🔴 Sulit' };
+
+            // Cari level lain yang masih ada kuota
+            const levelTersedia = validLevels.filter(lvl => {
+                const k = player.kuotaKerja[lvl];
+                return !k || k.jumlah < KUOTA_MAX;
+            });
+
+            let teksSaran = '';
+            if (levelTersedia.length > 0) {
+                const emojiLvl = { mudah: '🟢', sedang: '🟡', sulit: '🔴' };
+                teksSaran = `\n\n✅ *Tingkat yang masih tersedia:*\n${levelTersedia.map(lvl => `${emojiLvl[lvl]} \`!kerja ${lvl}\``).join('\n')}`;
+            } else {
+                teksSaran = '\n\n😴 Semua tingkat kerja sudah habis kuotanya. Istirahat dulu ya!';
+            }
+
+            return await sock.sendMessage(chatId, {
+                text: `🚫 *KUOTA KERJA HABIS!*\n\nKamu sudah bekerja *${KUOTA_MAX}x* di level *${levelLabel[userLevel]}* dalam 15 menit terakhir.\nKuota akan reset dalam *${sisaResetMenit} menit*.${teksSaran}`
+            }, { quoted: msg });
         }
 
         // 3. GENERATE SOAL

@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const { NGROK_URL } = require('./config');
 const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 const port = 3000;
@@ -53,8 +54,26 @@ app.get('/dashboard', (req, res) => {
     const token = req.query.token;
     if (!token) return res.status(401).send('<h1>Akses Ditolak</h1>');
 
-    if (!global.db.market.pasarInduk || Object.keys(global.db.market.pasarInduk).length === 0) {
-        global.db.market.pasarInduk = defaultPasarInduk;
+    let pasarIndukUpdated = false;
+    if (!global.db.market.pasarInduk) {
+        global.db.market.pasarInduk = {};
+    }
+    
+    for (const [kategori, items] of Object.entries(defaultPasarInduk)) {
+        if (!global.db.market.pasarInduk[kategori]) {
+            global.db.market.pasarInduk[kategori] = JSON.parse(JSON.stringify(items));
+            pasarIndukUpdated = true;
+        } else {
+            for (const [idBarang, info] of Object.entries(items)) {
+                if (!global.db.market.pasarInduk[kategori][idBarang]) {
+                    global.db.market.pasarInduk[kategori][idBarang] = JSON.parse(JSON.stringify(info));
+                    pasarIndukUpdated = true;
+                }
+            }
+        }
+    }
+    
+    if (pasarIndukUpdated) {
         fs.writeFileSync(path.join(process.cwd(), 'data/market.json'), JSON.stringify(global.db.market, null, 2));
     }
 
@@ -425,7 +444,7 @@ app.get('/panduan', (req, res) => {
                 display: flex; flex-direction: column; align-items: center; gap: 6px;
                 font-family: inherit; font-size: 11px; font-weight: 700; color: #9CA3AF;
                 cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-                width: 25%; position: relative;
+                width: 20%; position: relative;
             }
             .nav-icon { font-size: 22px; transition: transform 0.3s; filter: grayscale(100%) opacity(0.6); }
             
@@ -610,6 +629,53 @@ app.get('/panduan', (req, res) => {
                     <p>Gunakan <b>!couple @tag</b> untuk pacaran dengan pemain lain. Gunakan <b>!kawin</b> untuk menyilangkan pet milikmu dengan pet pemain lain untuk menghasilkan keturunan.</p>
                 </div>
             </div>
+            
+            <div id="tab-pemerintah" class="tab-content">
+                <div class="section-banner" style="background: linear-gradient(135deg, #8B5CF6, #6D28D9);">
+                    <h2>Pemerintahan & Ekonomi</h2>
+                    <p>Sistem Kabinet eksklusif, kendali pajak, dan kebijakan tingkat negara (Hanya via Japri/PM).</p>
+                </div>
+
+                <div class="card">
+                    <div class="cmd-header">
+                        <div class="icon-box">🏛️</div>
+                        <div class="cmd-tags"><span class="cmd-tag">!laporankas</span> <span class="cmd-tag secondary">!cetakuang</span></div>
+                    </div>
+                    <p>Hak istimewa Presiden untuk memantau Kas Negara dan mencetak uang Nexus dari ketiadaan.</p>
+                </div>
+
+                <div class="card">
+                    <div class="cmd-header">
+                        <div class="icon-box">🏅</div>
+                        <div class="cmd-tags"><span class="cmd-tag">!angkatmenteri</span> <span class="cmd-tag secondary">!pecatmenteri</span></div>
+                    </div>
+                    <p>Hak Presiden mengangkat/mencopot menteri. Format: <br><b>!angkatmenteri [kementerian] @tag</b>.<br>Pilihan: <i>keuangan, perdagangan, esdm, pertanian, pertahanan</i>.</p>
+                </div>
+
+                <div class="card">
+                    <div class="cmd-header">
+                        <div class="icon-box">⚖️</div>
+                        <div class="cmd-tags"><span class="cmd-tag">!ubahpajak</span> <span class="cmd-tag secondary">!bagibansos</span></div>
+                    </div>
+                    <p>Wewenang <b>Menteri Keuangan</b> untuk mengubah tarif pajak pendapatan (!kerja) dan membagikan Kas Negara sebagai Bansos ke rakyat.</p>
+                </div>
+
+                <div class="card">
+                    <div class="cmd-header">
+                        <div class="icon-box">📦</div>
+                        <div class="cmd-tags"><span class="cmd-tag">!suntikpasar</span></div>
+                    </div>
+                    <p>Wewenang <b>Menteri Perdagangan</b> mengimpor barang langka ke Bank Sentral pakai dana Kas Negara guna menekan inflasi harga.</p>
+                </div>
+
+                <div class="card">
+                    <div class="cmd-header">
+                        <div class="icon-box">🕵️</div>
+                        <div class="cmd-tags"><span class="cmd-tag">!intel</span></div>
+                    </div>
+                    <p>Wewenang rahasia <b>Menteri Pertahanan</b> memotong kas negara (50k) untuk mengintip saldo bank dan isi tas (inventory) orang lain. Berguna untuk razia.</p>
+                </div>
+            </div>
         </div>
 
         <nav class="bottom-nav">
@@ -624,6 +690,9 @@ app.get('/panduan', (req, res) => {
             </button>
             <button class="nav-item" onclick="switchTab('pasar', this)">
                 <span class="nav-icon">🏪</span> Pasar
+            </button>
+            <button class="nav-item" onclick="switchTab('pemerintah', this)">
+                <span class="nav-icon">🏛️</span> Kabinet
             </button>
         </nav>
 
@@ -652,7 +721,7 @@ app.get('/panduan', (req, res) => {
 
 function startWebServer() {
     app.listen(port, () => {
-        console.log(`[WEB SERVER] Dashboard Toko online di https://093c-180-241-240-20.ngrok-free.app`);
+        console.log(`[WEB SERVER] Dashboard Toko online di ${NGROK_URL}`);
     });
 }
 
