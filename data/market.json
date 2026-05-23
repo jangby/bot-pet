@@ -381,12 +381,12 @@
       "kategori": "serba_ada",
       "etalase": {
         "daging_ayam": {
-          "stok": 0,
+          "stok": 50,
           "harga": 90
         },
         "daging_sapi": {
-          "stok": 0,
-          "harga": 140
+          "stok": 50,
+          "harga": 170
         },
         "tulang_iga": {
           "stok": 0,
@@ -397,7 +397,7 @@
           "harga": 50
         },
         "gandum": {
-          "stok": 10,
+          "stok": 0,
           "harga": 80
         },
         "wortel": {
@@ -410,7 +410,7 @@
         },
         "rumput_sultan": {
           "stok": 0,
-          "harga": 150
+          "harga": 155
         },
         "ikan_kecil": {
           "stok": 0,
@@ -429,7 +429,7 @@
           "harga": 110
         },
         "kristal_mana": {
-          "stok": 10,
+          "stok": 0,
           "harga": 575
         },
         "buah_surga": {
@@ -437,7 +437,7 @@
           "harga": 820
         },
         "elixir_murni": {
-          "stok": 2,
+          "stok": 7,
           "harga": 1400
         },
         "pil_ringan": {
@@ -446,7 +446,7 @@
         },
         "perban": {
           "stok": 0,
-          "harga": 120
+          "harga": 150
         },
         "vitamin": {
           "stok": 0,
@@ -457,7 +457,7 @@
           "harga": 470
         },
         "salep_luka": {
-          "stok": 13,
+          "stok": 63,
           "harga": 370
         },
         "batu_bara": {
@@ -478,44 +478,44 @@
         }
       },
       "tokenWeb": "l70fu1uh3co",
-      "pendapatan": 15323,
-      "terakhirLaku": 1779318602198
+      "pendapatan": 235600,
+      "terakhirLaku": 1779509097043
     },
     "229064145170580": {
       "nama": "Lisensi Toko Serba Ada",
       "kategori": "serba_ada",
       "etalase": {
         "daging_ayam": {
-          "stok": 400,
+          "stok": 190,
           "harga": 80
         },
         "daging_sapi": {
-          "stok": 90,
-          "harga": 350
+          "stok": 50,
+          "harga": 300
         },
         "tulang_iga": {
-          "stok": 10,
-          "harga": 100
+          "stok": 50,
+          "harga": 180
         },
         "sosis_daging": {
           "stok": 10,
           "harga": 80
         },
         "gandum": {
-          "stok": 0,
-          "harga": 90
+          "stok": 200,
+          "harga": 95
         },
         "wortel": {
           "stok": 10,
           "harga": 85
         },
         "apel": {
-          "stok": 10,
-          "harga": 200
+          "stok": 200,
+          "harga": 250
         },
         "rumput_sultan": {
-          "stok": 20,
-          "harga": 400
+          "stok": 385,
+          "harga": 350
         },
         "ikan_kecil": {
           "stok": 10,
@@ -535,22 +535,22 @@
         },
         "kristal_mana": {
           "stok": 0,
-          "harga": 585
+          "harga": 655
         },
         "buah_surga": {
           "stok": 10,
           "harga": 890
         },
         "elixir_murni": {
-          "stok": 10,
+          "stok": 9,
           "harga": 1450
         },
         "pil_ringan": {
-          "stok": 10,
+          "stok": 25,
           "harga": 300
         },
         "perban": {
-          "stok": 444,
+          "stok": 208,
           "harga": 295
         },
         "vitamin": {
@@ -562,11 +562,116 @@
           "harga": 490
         },
         "salep_luka": {
-          "stok": 20,
+          "stok": 0,
           "harga": 440
         },
         "batu_bara": {
+          "stok": 50,
+          "harga": 200
+        },
+        "bijih_besi": {
+          "stok": 50,
+          "harga": 320
+        },
+        "emas": {
+          "stok": 10,
+          "harga": 1255
+        },
+        "berlian": {
+          "stok": 3,
+          "harga": 4000
+        }
+      },
+      "tokenWeb": "izy82wr0mla",
+      "pendapatan": 812605,
+      "terakhirLaku": 1779533007355
+    },
+    "173766357327942": {
+      "nama": "Lisensi Toko Serba Ada",
+      "kategori": "serba_ada",
+      "etalase": {
+        "daging_ayam": {
+          "stok": 5,
+          "harga": 70
+        },
+        "daging_sapi": {
+          "stok": 3,
+          "harga": 140
+        },
+        "tulang_iga": {
+          "stok": 4,
+          "harga": 100
+        },
+        "sosis_daging": {
+          "stok": 3,
+          "harga": 50
+        },
+        "gandum": {
+          "stok": 2,
+          "harga": 45
+        },
+        "wortel": {
+          "stok": 3,
+          "harga": 60
+        },
+        "apel": {
+          "stok": 2,
+          "harga": 80
+        },
+        "rumput_sultan": {
+          "stok": 1,
+          "harga": 120
+        },
+        "ikan_kecil": {
+          "stok": 2,
+          "harga": 50
+        },
+        "ikan_salmon": {
+          "stok": 3,
+          "harga": 170
+        },
+        "udang": {
+          "stok": 2,
+          "harga": 90
+        },
+        "cumi": {
+          "stok": 2,
+          "harga": 110
+        },
+        "kristal_mana": {
           "stok": 0,
+          "harga": 520
+        },
+        "buah_surga": {
+          "stok": 0,
+          "harga": 820
+        },
+        "elixir_murni": {
+          "stok": 0,
+          "harga": 1220
+        },
+        "pil_ringan": {
+          "stok": 3,
+          "harga": 170
+        },
+        "perban": {
+          "stok": 1,
+          "harga": 120
+        },
+        "vitamin": {
+          "stok": 1,
+          "harga": 270
+        },
+        "antibiotik": {
+          "stok": 0,
+          "harga": 470
+        },
+        "salep_luka": {
+          "stok": 1,
+          "harga": 320
+        },
+        "batu_bara": {
+          "stok": 2,
           "harga": 70
         },
         "bijih_besi": {
@@ -582,9 +687,9 @@
           "harga": 3020
         }
       },
-      "tokenWeb": "izy82wr0mla",
-      "pendapatan": 117784,
-      "terakhirLaku": 1779322336386
+      "tokenWeb": "r0vwr8yl83",
+      "pendapatan": 0,
+      "terakhirLaku": 1779576603768
     }
   },
   "milestoneToko": 0

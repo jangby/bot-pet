@@ -23,26 +23,33 @@ module.exports = {
             return await sock.sendMessage(chatId, { text: '❌ Saat ini tidak ada sesi pengumpulan NIK yang aktif dari Presiden.' });
         }
 
-        // 3. Ekstrak data NIK menggunakan Regex dari full text
+        // 3. Ekstrak data NIK menggunakan Regex
         const fullText = msg.message.conversation || msg.message.extendedTextMessage?.text || '';
         const match = fullText.match(/^!nik\s*\|([^|]+)\|\s*(\d+)$/i);
 
         if (!match) {
-            const petunjukTeks = `⚠️ *FORMAT PENGIRIMAN NIK SALAH* ⚠️\n\n` +
-                `Format pesan yang Anda kirimkan tidak sesuai. Agar data Anda dapat direkam oleh sistem secara otomatis untuk kebutuhan *data MBG Santri*, mohon kirimkan ulang dengan mengikuti format berikut:\n\n` +
-                `📋 *Format Penulisan:* (Salin dan sesuaikan)\n` +
+            // Analisis kesalahan umum untuk memberikan feedback detail
+            let errorFeedback = "⚠️ *FORMAT PENGIRIMAN NIK SALAH* ⚠️\n\n";
+            
+            if (fullText.includes('[') || fullText.includes(']')) {
+                errorFeedback += "❌ *Kesalahan:* Anda menggunakan tanda kurung siku `[]`. Mohon gunakan tanda pipa `|`.\n\n";
+            } else if (!fullText.includes('|')) {
+                errorFeedback += "❌ *Kesalahan:* Anda tidak menggunakan tanda pembatas `|`.\n\n";
+            } else if (fullText.split('|').length < 3) {
+                errorFeedback += "❌ *Kesalahan:* Kurang tanda pipa penutup. Pastikan formatnya `!nik |Nama| NIK`.\n\n";
+            }
+
+            const petunjukTeks = `${errorFeedback}` +
+                `Pengumpulan NIK ini sangat penting untuk kebutuhan *Data MBG Santri*. Agar data Anda dapat direkam oleh sistem, mohon kirimkan ulang dengan format berikut:\n\n` +
+                `📋 *Format Penulisan yang Benar:*\n` +
                 `\`\`\`!nik |Nama Lengkap Sesuai KK| Nomor NIK\`\`\`\n\n` +
-                `💡 *Aturan Penulisan Penting:* (Mohon teliti)\n` +
-                `1️⃣ Gunakan garis tegak *pipa* (\`|\`) untuk mengapit nama lengkap Anda. Tanda ini (\`|\`) biasanya terletak di atas tombol Enter/kembali pada keyboard handphone Anda.\n` +
-                `2️⃣ *Nama Lengkap:* Tulis di antara tanda \`|\` dan \`|\` sesuai ejaan resmi Kartu Keluarga.\n` +
-                `3️⃣ *Nomor NIK:* Tulis 16 digit angka NIK Anda tepat setelah tanda pipa penutup kedua (tanpa spasi/tanda baca lain).\n\n` +
-                `✍️ *Contoh Benar:* (Bisa disalin lalu diganti datanya)\n` +
-                `\`\`\`!nik |Budi Santoso| 3201234567890123\`\`\`\n\n` +
-                `❌ *Hindari Kesalahan Umum Ini:* \n` +
-                `• Menggunakan tanda kurung biasa atau siku, seperti: \`!nik [Budi Santoso] 32012...\` (SALAH, gunakan \`|\`)\n` +
-                `• Tidak menulis tanda pembatas pipa sama sekali, seperti: \`!nik Budi Santoso 32012...\` (SALAH)\n` +
-                `• Panjang digit NIK kurang atau lebih dari 16 digit angka.\n\n` +
-                `Silakan ketik ulang atau edit pesan Anda lalu kirim kembali ke bot ini.`;
+                `💡 *Aturan Penting:*\n` +
+                `1. Gunakan garis tegak *pipa* (\`|\`) untuk mengapit nama.\n` +
+                `2. *Nama Lengkap:* Tulis sesuai ejaan di Kartu Keluarga.\n` +
+                `3. *Nomor NIK:* Tulis 16 digit angka tanpa spasi setelah tanda pipa.\n\n` +
+                `✍️ *Contoh:* \`!nik |Budi Santoso| 3201234567890123\`\n\n` +
+                `Pastikan NIK terdiri dari *16 digit angka*. Silakan ulangi pengiriman pesan Anda.`;
+            
             return await sock.sendMessage(chatId, { text: petunjukTeks });
         }
 

@@ -81,10 +81,17 @@ _Pengirim dirahasiakan._`;
 
             await sock.sendMessage(jidTujuan, { text: teksConfess });
 
-            // Kirim konfirmasi ke pengirim (di grup)
+            // Hapus pesan asli dari pengirim di grup agar tidak ketahuan
+            try {
+                await sock.sendMessage(chatId, { delete: msg.key });
+            } catch (err) {
+                console.error('[ERROR] Gagal menghapus pesan confess di grup:', err);
+            }
+
+            // Kirim konfirmasi ke pengirim (tanpa quote pesan yang dihapus)
             await sock.sendMessage(chatId, {
-                text: `✅ Confess berhasil dikirim!\n\n_Pesanmu sudah tersampaikan secara anonim. Identitasmu dirahasiakan._`
-            }, { quoted: msg });
+                text: `✅ Confess berhasil dikirim!\n\n_Pesan rahasia sudah tersampaikan secara anonim._`
+            });
 
         } catch (error) {
             console.error('[ERROR] !confess:', error);

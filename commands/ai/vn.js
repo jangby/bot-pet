@@ -46,7 +46,7 @@ module.exports = {
             // ==========================================
             const API_KEY_VN = process.env.VOICERSS_API_KEY || 'MASUKKAN_VOICERSS_API_KEY';
 
-            const responAPI = await axios.get('https://api.voicerss.org/', {
+            const responAPI = await axios.get('https://cloud.google.com/text-to-speech/', {
                 params: {
                     key: API_KEY_VN,
                     src: teksVN,
