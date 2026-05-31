@@ -441,8 +441,8 @@
           "harga": 1400
         },
         "pil_ringan": {
-          "stok": 0,
-          "harga": 170
+          "stok": 5,
+          "harga": 180
         },
         "perban": {
           "stok": 0,
@@ -478,19 +478,19 @@
         }
       },
       "tokenWeb": "l70fu1uh3co",
-      "pendapatan": 235600,
-      "terakhirLaku": 1779509097043
+      "pendapatan": 242080,
+      "terakhirLaku": 1779721004767
     },
     "229064145170580": {
       "nama": "Lisensi Toko Serba Ada",
       "kategori": "serba_ada",
       "etalase": {
         "daging_ayam": {
-          "stok": 190,
+          "stok": 179,
           "harga": 80
         },
         "daging_sapi": {
-          "stok": 50,
+          "stok": 30,
           "harga": 300
         },
         "tulang_iga": {
@@ -502,11 +502,11 @@
           "harga": 80
         },
         "gandum": {
-          "stok": 200,
+          "stok": 199,
           "harga": 95
         },
         "wortel": {
-          "stok": 10,
+          "stok": 135,
           "harga": 85
         },
         "apel": {
@@ -514,15 +514,15 @@
           "harga": 250
         },
         "rumput_sultan": {
-          "stok": 385,
-          "harga": 350
+          "stok": 355,
+          "harga": 355
         },
         "ikan_kecil": {
           "stok": 10,
           "harga": 70
         },
         "ikan_salmon": {
-          "stok": 10,
+          "stok": 8,
           "harga": 250
         },
         "udang": {
@@ -546,11 +546,11 @@
           "harga": 1450
         },
         "pil_ringan": {
-          "stok": 25,
+          "stok": 21,
           "harga": 300
         },
         "perban": {
-          "stok": 208,
+          "stok": 998,
           "harga": 295
         },
         "vitamin": {
@@ -583,8 +583,8 @@
         }
       },
       "tokenWeb": "izy82wr0mla",
-      "pendapatan": 812605,
-      "terakhirLaku": 1779533007355
+      "pendapatan": 1071361,
+      "terakhirLaku": 1780024750325
     },
     "173766357327942": {
       "nama": "Lisensi Toko Serba Ada",

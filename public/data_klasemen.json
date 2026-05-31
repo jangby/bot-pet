@@ -1,5 +1,13 @@
 [
   {
+    "nomor": "185925007056938",
+    "nama": "🌹MEKARLITA🌹",
+    "saldo": 1408518,
+    "petScore": 189600,
+    "totalScore": 1598118,
+    "petCount": 3
+  },
+  {
     "nomor": "137671385039053",
     "nama": "rey",
     "saldo": 1234608,
@@ -8,75 +16,67 @@
     "petCount": 2
   },
   {
-    "nomor": "231250417713221",
-    "nama": "Fajar",
-    "saldo": 902805,
-    "petScore": 56400,
-    "totalScore": 959205,
-    "petCount": 2
-  },
-  {
-    "nomor": "75038078300307",
-    "nama": "Z",
-    "saldo": 554462,
-    "petScore": 118100,
-    "totalScore": 672562,
-    "petCount": 1
-  },
-  {
-    "nomor": "185925007056938",
-    "nama": "🌹MEKARLITA🌹",
-    "saldo": 414885,
-    "petScore": 188900,
-    "totalScore": 603785,
-    "petCount": 3
-  },
-  {
     "nomor": "107774335779006",
     "nama": "😜LIARNITA😜",
-    "saldo": 349414,
-    "petScore": 251100,
-    "totalScore": 600514,
+    "saldo": 705904,
+    "petScore": 254600,
+    "totalScore": 960504,
     "petCount": 4
-  },
-  {
-    "nomor": "21556944220222",
-    "nama": "Salomon",
-    "saldo": 399313,
-    "petScore": 102600,
-    "totalScore": 501913,
-    "petCount": 2
-  },
-  {
-    "nomor": "29833430089855",
-    "nama": "🫦LEGITNITA🫦",
-    "saldo": 383519,
-    "petScore": 115100,
-    "totalScore": 498619,
-    "petCount": 1
   },
   {
     "nomor": "229064145170580",
     "nama": "🥵TEMBEMNITA🥵",
-    "saldo": 260275,
+    "saldo": 763324,
     "petScore": 178600,
-    "totalScore": 438875,
+    "totalScore": 941924,
     "petCount": 3
   },
   {
-    "nomor": "50273364009124",
-    "nama": "PRINCESS LEBAH 🐝",
-    "saldo": 330704,
-    "petScore": 64200,
-    "totalScore": 394904,
+    "nomor": "75038078300307",
+    "nama": "Z",
+    "saldo": 606869,
+    "petScore": 118100,
+    "totalScore": 724969,
     "petCount": 1
+  },
+  {
+    "nomor": "29833430089855",
+    "nama": "🫦LEGITNITA🫦",
+    "saldo": 462743,
+    "petScore": 115100,
+    "totalScore": 577843,
+    "petCount": 1
+  },
+  {
+    "nomor": "21556944220222",
+    "nama": "Salomon",
+    "saldo": 419763,
+    "petScore": 102600,
+    "totalScore": 522363,
+    "petCount": 2
   },
   {
     "nomor": "178392120950960",
     "nama": "🐦‍🔥 pian",
-    "saldo": 75532,
+    "saldo": 146862,
     "petScore": 113900,
-    "totalScore": 189432,
+    "totalScore": 260762,
+    "petCount": 1
+  },
+  {
+    "nomor": "64592063512630",
+    "nama": "PTRA.S",
+    "saldo": 202471,
+    "petScore": 0,
+    "totalScore": 202471,
+    "petCount": 0
+  },
+  {
+    "nomor": "168032676651233",
+    "nama": "Bobi",
+    "saldo": 182733,
+    "petScore": 1320,
+    "totalScore": 184053,
     "petCount": 1
   },
   {
@@ -88,27 +88,19 @@
     "petCount": 2
   },
   {
-    "nomor": "168032676651233",
-    "nama": "Bobi",
-    "saldo": 158073,
-    "petScore": 1320,
-    "totalScore": 159393,
+    "nomor": "50273364009124",
+    "nama": "PRINCESS LEBAH 🐝",
+    "saldo": 95164,
+    "petScore": 69800,
+    "totalScore": 164964,
     "petCount": 1
-  },
-  {
-    "nomor": "64592063512630",
-    "nama": "PTRA.S",
-    "saldo": 123771,
-    "petScore": 0,
-    "totalScore": 123771,
-    "petCount": 0
   },
   {
     "nomor": "209173564367025",
     "nama": "barkah",
-    "saldo": 25460,
+    "saldo": 27181,
     "petScore": 58600,
-    "totalScore": 84060,
+    "totalScore": 85781,
     "petCount": 1
   },
   {
@@ -120,59 +112,75 @@
     "petCount": 2
   },
   {
-    "nomor": "1435089526784",
-    "nama": "kumii❤️",
-    "saldo": 18196,
-    "petScore": 55800,
-    "totalScore": 73996,
+    "nomor": "111416384184361",
+    "nama": "Alwi 🤍 Bobi",
+    "saldo": 26369,
+    "petScore": 55100,
+    "totalScore": 81469,
     "petCount": 1
   },
   {
-    "nomor": "111416384184361",
-    "nama": "Alwi 🤍 Bobi",
-    "saldo": 32593,
-    "petScore": 0,
-    "totalScore": 32593,
-    "petCount": 0
+    "nomor": "1435089526784",
+    "nama": "kumii❤️",
+    "saldo": 18983,
+    "petScore": 55800,
+    "totalScore": 74783,
+    "petCount": 1
+  },
+  {
+    "nomor": "149740545151215",
+    "nama": "KECOA",
+    "saldo": 14221,
+    "petScore": 55600,
+    "totalScore": 69821,
+    "petCount": 2
+  },
+  {
+    "nomor": "231250417713221",
+    "nama": "Fajar",
+    "saldo": 190,
+    "petScore": 56400,
+    "totalScore": 56590,
+    "petCount": 2
+  },
+  {
+    "nomor": "261224373690436",
+    "nama": "Reno Putra Mahkota",
+    "saldo": 2627,
+    "petScore": 27900,
+    "totalScore": 30527,
+    "petCount": 1
+  },
+  {
+    "nomor": "230240831971567",
+    "nama": "DaffaCEO",
+    "saldo": 3182,
+    "petScore": 18780,
+    "totalScore": 21962,
+    "petCount": 3
   },
   {
     "nomor": "174921602854973",
     "nama": "Dhinz",
-    "saldo": 15313,
+    "saldo": 15315,
     "petScore": 2080,
-    "totalScore": 17393,
-    "petCount": 1
-  },
-  {
-    "nomor": "173766357327942",
-    "nama": "Bobi",
-    "saldo": 13831,
-    "petScore": 3180,
-    "totalScore": 17011,
+    "totalScore": 17395,
     "petCount": 1
   },
   {
     "nomor": "196993574010939",
     "nama": "mz kim",
-    "saldo": 10882,
-    "petScore": 3060,
-    "totalScore": 13942,
+    "saldo": 11221,
+    "petScore": 3760,
+    "totalScore": 14981,
     "petCount": 1
-  },
-  {
-    "nomor": "261224373690436",
-    "nama": "Reno Putra Mahkota",
-    "saldo": 12520,
-    "petScore": 0,
-    "totalScore": 12520,
-    "petCount": 0
   },
   {
     "nomor": "179165332521048",
     "nama": "[Belum Daftar] - 179165332521048",
-    "saldo": 12326,
+    "saldo": 13016,
     "petScore": 0,
-    "totalScore": 12326,
+    "totalScore": 13016,
     "petCount": 0
   },
   {
@@ -216,14 +224,6 @@
     "petCount": 0
   },
   {
-    "nomor": "149740545151215",
-    "nama": "KECOA",
-    "saldo": 7716,
-    "petScore": 1300,
-    "totalScore": 9016,
-    "petCount": 1
-  },
-  {
     "nomor": "79482782257347",
     "nama": "[Belum Daftar] - 79482782257347",
     "saldo": 7687,
@@ -240,11 +240,27 @@
     "petCount": 0
   },
   {
+    "nomor": "173766357327942",
+    "nama": "Bobi",
+    "saldo": 140,
+    "petScore": 3180,
+    "totalScore": 3320,
+    "petCount": 1
+  },
+  {
     "nomor": "16845197299742",
     "nama": "[Belum Daftar] - 16845197299742",
     "saldo": 200,
     "petScore": 0,
     "totalScore": 200,
+    "petCount": 0
+  },
+  {
+    "nomor": "203543533359280",
+    "nama": "[Belum Daftar] - 203543533359280",
+    "saldo": 1,
+    "petScore": 0,
+    "totalScore": 1,
     "petCount": 0
   }
 ]

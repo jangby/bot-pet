@@ -1,43 +1,49 @@
 {
   "168032676651233": {
-    "saldo": 158073,
+    "saldo": 182733,
     "reputasi": 12,
     "nama": "Bobi",
-    "lastGacha": 1779331176604,
+    "lastGacha": 1779872257846,
     "pasangan": "111416384184361",
     "lastKerja": 1779008357803,
     "kuotaKerja": {},
     "pekerjaan": "PNS",
-    "lastGajian": 1779507876734
+    "lastGajian": 1779872225880
   },
   "21556944220222": {
-    "saldo": 399313,
+    "saldo": 419763,
     "reputasi": 48,
     "lastKerja": 1779201784123,
     "nama": "Salomon",
-    "lastGacha": 1779143498250,
+    "lastGacha": 1779977763433,
     "pasangan": null,
     "pekerjaan": "PNS",
-    "lastGajian": 1779201240539
+    "lastGajian": 1779978037732
   },
   "178392120950960": {
-    "saldo": 76132,
-    "reputasi": 21,
-    "lastKerja": 1779232174296,
+    "saldo": 146862,
+    "reputasi": 24,
+    "lastKerja": 1779720349892,
     "nama": "🐦‍🔥 pian",
     "lastGacha": 1779578948219,
     "pasangan": "256886758719623",
     "pekerjaan": "PNS",
-    "lastGajian": 1779509060971
+    "lastGajian": 1779720833836,
+    "kuotaKerja": {
+      "sulit": {
+        "jumlah": 1,
+        "resetAt": 1779721249893
+      }
+    }
   },
   "229064145170580": {
-    "saldo": 261868,
+    "saldo": 744325,
     "reputasi": 101,
     "lastKerja": 1779463646971,
     "nama": "🥵TEMBEMNITA🥵",
-    "lastGacha": 1779425586922,
+    "lastGacha": 1779977751560,
     "pekerjaan": "PNS",
-    "lastGajian": 1779524883533,
+    "lastGajian": 1779977477168,
     "pasangan": "75038078300307",
     "kuotaKerja": {
       "sulit": {
@@ -69,105 +75,113 @@
     "nama": "😜LIARNITA😜"
   },
   "29833430089855": {
-    "saldo": 383519,
-    "reputasi": 74,
-    "lastKerja": 1779509163835,
+    "saldo": 463262,
+    "reputasi": 83,
+    "lastKerja": 1780027971448,
     "nama": "🫦LEGITNITA🫦",
-    "lastGacha": 1779427127198,
+    "lastGacha": 1779979432791,
     "mmr": 52,
     "kuotaKerja": {
       "sulit": {
         "jumlah": 1,
-        "resetAt": 1779510063837
+        "resetAt": 1780028871451
       }
     },
     "pekerjaan": "PNS",
-    "lastGajian": 1779427121680
+    "lastGajian": 1779979430087
   },
   "75038078300307": {
-    "saldo": 554462,
+    "saldo": 647767,
     "reputasi": 35,
     "nama": "Z",
     "lastKerja": 1779431254612,
-    "lastGacha": 1779318368451,
+    "lastGacha": 1779951889870,
     "mmr": 0,
     "pekerjaan": "PNS",
-    "lastGajian": 1779438444920,
+    "lastGajian": 1780027759901,
     "pasangan": "229064145170580",
     "kuotaKerja": {}
   },
   "174921602854973": {
-    "saldo": 15313,
+    "saldo": 15315,
     "reputasi": 27,
     "lastGacha": 1778770222170,
     "lastKerja": 1779160906439,
     "nama": "Dhinz"
   },
   "64592063512630": {
-    "saldo": 143286,
-    "reputasi": 18,
+    "saldo": 202471,
+    "reputasi": 24,
     "nama": "PTRA.S",
-    "lastKerja": 1779192637490,
-    "lastGacha": 1779548156299,
+    "lastKerja": 1779873602954,
+    "lastGacha": 1779981249853,
     "pekerjaan": "PNS",
-    "lastGajian": 1779548147354
+    "lastGajian": 1779981244077,
+    "kuotaKerja": {
+      "sulit": {
+        "jumlah": 2,
+        "resetAt": 1779874385838
+      }
+    }
   },
   "185925007056938": {
-    "saldo": 417029,
-    "reputasi": 92,
+    "saldo": 1408519,
+    "reputasi": 98,
     "nama": "🌹MEKARLITA🌹",
-    "lastKerja": 1779509204063,
-    "lastGacha": 1779577992113,
+    "lastKerja": 1779977877938,
+    "lastGacha": 1779977702499,
     "mmr": 313,
-    "pasangan": "231250417713221",
+    "pasangan": null,
     "pekerjaan": "PNS",
-    "lastGajian": 1779516073855,
+    "lastGajian": 1779977684067,
     "kuotaKerja": {
       "sulit": {
         "jumlah": 1,
-        "resetAt": 1779510104064
+        "resetAt": 1779978777938
       }
     }
   },
   "1435089526784": {
-    "saldo": 18196,
+    "saldo": 18983,
     "reputasi": 5,
-    "lastGacha": 1779438105544,
+    "lastGacha": 1779872071295,
     "nama": "kumii❤️",
     "lastKerja": 1779192310030
   },
   "196993574010939": {
-    "saldo": 12058,
-    "reputasi": 9,
-    "lastKerja": 1779496890352,
+    "saldo": 11221,
+    "reputasi": 15,
+    "lastKerja": 1779662932799,
     "kuotaKerja": {
       "sulit": {
-        "jumlah": 1,
-        "resetAt": 1779497790356
+        "jumlah": 2,
+        "resetAt": 1779663636048
       }
     },
-    "lastGacha": 1779578057494,
+    "lastGacha": 1779873350559,
     "nama": "mz kim"
   },
   "261224373690436": {
-    "saldo": 14006,
-    "reputasi": 27,
-    "lastKerja": 1779513935407,
+    "saldo": 2627,
+    "reputasi": 60,
+    "lastKerja": 1779891913574,
     "nama": "Reno Putra Mahkota",
-    "kuotaKerja": {
-      "sulit": {
-        "jumlah": 1,
-        "resetAt": 1779514835413
-      }
-    },
+    "kuotaKerja": {},
     "lastGacha": 1779582543038
   },
   "111416384184361": {
-    "saldo": 32959,
-    "reputasi": 0,
-    "lastGacha": 1779582717068,
+    "saldo": 26369,
+    "reputasi": 15,
+    "lastGacha": 1780025439884,
     "pasangan": "168032676651233",
-    "nama": "Alwi 🤍 Bobi"
+    "nama": "Alwi 🤍 Bobi",
+    "kuotaKerja": {
+      "sulit": {
+        "jumlah": 1,
+        "resetAt": 1779890892729
+      }
+    },
+    "lastKerja": 1779889992726
   },
   "137671385039053": {
     "saldo": 1234608,
@@ -190,15 +204,21 @@
     "lastKerja": 1778917401889
   },
   "107774335779006": {
-    "saldo": 374862,
-    "reputasi": 12,
+    "saldo": 705904,
+    "reputasi": 15,
     "nama": "😜LIARNITA😜",
-    "lastKerja": 1779002151744,
-    "lastGacha": 1779515941542,
+    "lastKerja": 1779873235206,
+    "lastGacha": 1779977757762,
     "mmr": 0,
     "pekerjaan": "PNS",
-    "lastGajian": 1779515939117,
-    "pasangan": "158128549183717"
+    "lastGajian": 1779977749123,
+    "pasangan": null,
+    "kuotaKerja": {
+      "sulit": {
+        "jumlah": 1,
+        "resetAt": 1779874135207
+      }
+    }
   },
   "79482782257347": {
     "saldo": 7687,
@@ -210,28 +230,34 @@
     "reputasi": 0
   },
   "231250417713221": {
-    "saldo": 902805,
+    "saldo": 190,
     "reputasi": 2,
     "lastKerja": 1778950219988,
     "nama": "Fajar",
-    "pasangan": "185925007056938",
+    "pasangan": null,
     "mmr": 0
   },
   "149740545151215": {
-    "saldo": 7716,
-    "reputasi": 0,
-    "lastKerja": 1778983792915,
-    "nama": "KECOA"
+    "saldo": 14221,
+    "reputasi": 21,
+    "lastKerja": 1779892644474,
+    "nama": "KECOA",
+    "kuotaKerja": {
+      "sulit": {
+        "jumlah": 3,
+        "resetAt": 1779893092531
+      }
+    }
   },
   "209173564367025": {
-    "saldo": 26737,
-    "reputasi": 56,
-    "lastKerja": 1779321611333,
+    "saldo": 27181,
+    "reputasi": 62,
+    "lastKerja": 1779663018193,
     "nama": "barkah",
     "kuotaKerja": {
       "sulit": {
         "jumlah": 1,
-        "resetAt": 1779322511334
+        "resetAt": 1779663918194
       }
     },
     "lastGacha": 1779580548533,
@@ -279,17 +305,18 @@
     "reputasi": 0
   },
   "50273364009124": {
-    "saldo": 343245,
-    "reputasi": 5,
+    "saldo": 95164,
+    "reputasi": 29,
     "kuotaKerja": {
       "sulit": {
         "jumlah": 1,
-        "resetAt": 1779330901293
+        "resetAt": 1779978765329
       }
     },
-    "lastKerja": 1779330001290,
+    "lastKerja": 1779977865328,
     "nama": "PRINCESS LEBAH 🐝",
-    "mmr": 0
+    "mmr": 0,
+    "lastGacha": 1779977718177
   },
   "256362453987381": {
     "saldo": 0,
@@ -352,7 +379,7 @@
   "158128549183717": {
     "saldo": 0,
     "reputasi": 0,
-    "pasangan": "107774335779006"
+    "pasangan": null
   },
   "52377478508774": {
     "saldo": 0,
@@ -364,11 +391,20 @@
     "reputasi": 0
   },
   "203543533359280": {
-    "saldo": 0,
+    "saldo": 1,
     "reputasi": 0
   },
   "230240831971567": {
-    "saldo": 0,
-    "reputasi": 0
+    "saldo": 6087,
+    "reputasi": 180,
+    "nama": "DaffaCEO",
+    "kuotaKerja": {
+      "sulit": {
+        "jumlah": 1,
+        "resetAt": 1780027204183
+      }
+    },
+    "lastKerja": 1780026304180,
+    "lastGacha": 1779957765682
   }
 }
