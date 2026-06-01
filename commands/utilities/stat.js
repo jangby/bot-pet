@@ -1,4 +1,6 @@
 const axios = require('axios');
+// Mengambil daftar nomor admin dari file config.js
+const { ADMIN_PPDB } = require('../../config.js'); 
 
 module.exports = [
     {
@@ -7,6 +9,35 @@ module.exports = [
         async execute(sock, msg, args) {
             const chatId = msg.key.remoteJid;
 
+            // ==========================================
+            // 1. VALIDASI PRIVATE MESSAGE (PM) ONLY
+            // ==========================================
+            const isGroup = chatId.endsWith('@g.us');
+            if (isGroup) {
+                return await sock.sendMessage(chatId, { 
+                    text: '❌ *Akses Ditolak*\nPerintah ini bersifat rahasia dan hanya dapat digunakan melalui Private Message (Japri) langsung ke bot.' 
+                }, { quoted: msg });
+            }
+
+            // ==========================================
+            // 2. VALIDASI NOMOR DARI CONFIG.JS
+            // ==========================================
+            // Prioritaskan remoteJidAlt untuk mendapatkan nomor asli (bypass LID)
+            const senderRaw = msg.key.remoteJidAlt || msg.key.participant || msg.key.remoteJid;
+            
+            // Memotong string untuk mengambil angka SEBELUM tanda '@' dan ':'
+            const senderNumber = senderRaw ? String(senderRaw).split('@')[0].split(':')[0] : '';
+
+            // Mengecek apakah nomor pengirim ADA di dalam array ADMIN_PPDB
+            if (!ADMIN_PPDB.includes(senderNumber)) {
+                return await sock.sendMessage(chatId, { 
+                    text: '⛔ *Akses Ditolak*\nNomor Anda tidak terdaftar sebagai Admin PPDB. Anda tidak memiliki izin untuk melihat statistik ini.' 
+                }, { quoted: msg });
+            }
+
+            // ==========================================
+            // JIKA LOLOS VALIDASI, JALANKAN PERINTAH
+            // ==========================================
             try {
                 // 1. Pesan Loading (Bisa gunakan emoji bergerak/menunggu)
                 await sock.sendMessage(chatId, { 

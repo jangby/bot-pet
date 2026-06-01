@@ -8,6 +8,7 @@ const pino = require('pino');
 const qrcode = require('qrcode-terminal');
 const fs = require('fs');
 const path = require('path');
+const regModule = require('./commands/utilities/registrasi');
 
 let lelangInterval; 
 
@@ -256,12 +257,25 @@ async function connectToWhatsApp() {
 
     // --- 📨 PESAN MASUK ---
     sock.ev.on('messages.upsert', async m => {
-        const msg = m.messages[0];
-        if (!msg.message || msg.key.fromMe) return;
+    const msg = m.messages[0];
+    if (!msg.message || msg.key.fromMe) return;
 
-        const teksPesan = (msg.message.conversation || msg.message.extendedTextMessage?.text || "").toLowerCase().trim();
-        const replierId = (msg.key.participant || msg.key.remoteJid).replace(/:\d+/, '').split('@')[0];
-        const idPesanDibalas = msg.message.extendedTextMessage?.contextInfo?.stanzaId;
+    // 1. DEFINISI VARIABEL
+    const chatId = msg.key.remoteJid;
+    const senderNumber = (msg.key.participant || msg.key.remoteJid).replace(/:\d+/, '').split('@')[0];
+    const teksPesan = (msg.message.conversation || msg.message.extendedTextMessage?.text || "").toLowerCase().trim();
+    const idPesanDibalas = msg.message.extendedTextMessage?.contextInfo?.stanzaId;
+    const replierId = senderNumber;
+
+    // 2. SESI PENDAFTARAN (Diletakkan SEBELUM cek tanda "!")
+    const { sesiPendaftaran, handleSession } = require('./commands/utilities/registrasi');
+    
+    if (sesiPendaftaran && sesiPendaftaran[senderNumber]) {
+        console.log(`[DEBUG] User ${senderNumber} terdeteksi dalam sesi.`);
+        return await handleSession(sock, msg, chatId, senderNumber, teksPesan);
+    }
+
+    // --- (Lanjutkan ke logika GAS / COMMAND HANDLER di bawahnya) ---
 
         // --- ⚔️ LOGIKA "GAS" (DUEL & KAWIN) ---
         if (teksPesan === 'gas' && idPesanDibalas) {
@@ -378,46 +392,38 @@ async function connectToWhatsApp() {
             }
         }
 
-        // --- 🛠️ COMMAND HANDLER ---
-        const fullTeks = msg.message.conversation || msg.message.extendedTextMessage?.text || msg.message.imageMessage?.caption || '';
-        if (!fullTeks.startsWith('!')) return;
+        // 4. COMMAND HANDLER (Logika !daftar, !nik, dll)
+    const fullTeks = msg.message.conversation || msg.message.extendedTextMessage?.text || msg.message.imageMessage?.caption || '';
+    if (!fullTeks.startsWith('!')) return;
 
-        const args = fullTeks.slice(1).trim().split(/\s+/);
-        let cmd = args.shift().toLowerCase();
-        
-        // Fallback untuk salah ketik tanpa spasi (misal !nik| atau !nik[)
-        if (!sock.commands.has(cmd) && cmd.startsWith('nik')) {
-            cmd = 'nik';
+    const args = fullTeks.slice(1).trim().split(/\s+/);
+    let cmd = args.shift().toLowerCase();
+    
+    if (!sock.commands.has(cmd) && cmd.startsWith('nik')) cmd = 'nik';
+    
+    if (!global.db.player[senderNumber]) {
+        global.db.player[senderNumber] = { saldo: 0, reputasi: 0 };
+        fs.writeFileSync('./data/player.json', JSON.stringify(global.db.player, null, 2));
+    }
+
+    if (sock.commands.has(cmd)) {
+        // --- MIDDLEWARE & LOCKDOWN ---
+        const { isPrivate } = require('./utils/middleware.js');
+        if (isPrivate(msg) && cmd === 'kerja') {
+            return await sock.sendMessage(chatId, { text: '⚠️ *PERINGATAN*... _Silakan gunakan di grup!_' }, { quoted: msg });
         }
         
-        const senderNumber = (msg.key.participant || msg.key.remoteJid).replace(/:\d+/, '').split('@')[0];
-
-        if (!global.db.player[senderNumber]) {
-            global.db.player[senderNumber] = { saldo: 0, reputasi: 0 };
-            fs.writeFileSync('./data/player.json', JSON.stringify(global.db.player, null, 2));
+        if (global.db.pemilu.status !== 'idle' && !['pemilu', 'nyaleg', 'coblos', 'saldo', 'ktp', 'nama'].includes(cmd)) {
+            return await sock.sendMessage(chatId, { text: '🏛️ *HARI LIBUR NASIONAL!*' }, { quoted: msg });
         }
 
-        if (sock.commands.has(cmd)) {
-            // --- SISTEM BLOKIR PM (PRIVATE MESSAGE) ---
-            // Hanya !kerja yang tidak bisa dipakai di chat pribadi
-            const { isPrivate } = require('./utils/middleware.js');
-            const pmBlockedCommands = ['kerja'];
-            
-            if (isPrivate(msg) && pmBlockedCommands.includes(cmd)) {
-                return await sock.sendMessage(msg.key.remoteJid, { text: '⚠️ *PERINGATAN*\n\nPerintah `!kerja` hanya bisa digunakan di dalam *Grup*.\n\n_Silakan gunakan perintah ini di grup bersama teman-temanmu!_' }, { quoted: msg });
-            }
-
-            // --- SISTEM LOCKDOWN PEMILU ---
-            if (global.db.pemilu.status !== 'idle') {
-                const allowed = ['pemilu', 'nyaleg', 'coblos', 'saldo', 'ktp', 'nama'];
-                if (!allowed.includes(cmd)) {
-                    return await sock.sendMessage(msg.key.remoteJid, { text: '🏛️ *HARI LIBUR NASIONAL!* Aktivitas ekonomi ditutup selama Pemilu.' }, { quoted: msg });
-                }
-            }
-            try { await sock.commands.get(cmd).execute(sock, msg, args); } 
-            catch (e) { console.error(`[ERROR] CMD ${cmd}:`, e); }
+        try { 
+            await sock.commands.get(cmd).execute(sock, msg, args); 
+        } catch (e) { 
+            console.error(`[ERROR] CMD ${cmd}:`, e); 
         }
-    });
+    }
+});
 
     const startWebServer = require('./server.js');
     startWebServer();
