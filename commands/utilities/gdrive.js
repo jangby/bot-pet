@@ -133,4 +133,5 @@ module.exports = {
             await sock.sendMessage(chatId, { text: pesanError }, { quoted: msg });
         }
     }
+    
 };
