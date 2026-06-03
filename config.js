@@ -2,7 +2,7 @@
 //  CONFIG UTAMA — ubah hanya di sini kalau ngrok ganti link!
 // ============================================================
 
-const NGROK_URL = 'http://72.61.208.130:3000'; // Contoh: 'http://103.82.24.55:3000'
+const NGROK_URL = 'https://pet.jagokas.online';
 
 // Daftar nomor WhatsApp yang diizinkan mengakses perintah rahasia PPDB
 // Gunakan format angka berawalan kode negara (contoh: 62) tanpa karakter lain
